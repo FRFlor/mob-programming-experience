@@ -1,19 +1,27 @@
 <template>
     <div id="app">
-        <hello-world/>
+        <grid-handler/>
+        <drag class="drag" :transfer-data="{ draggable }">{{ draggable }}</drag>
+        <drop class="drop" @drop="handleDrop">Dropzone</drop>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+import GridHandler from '@/components/GridHandler.vue';
 
 @Component({
   components: {
-    HelloWorld,
+      GridHandler,
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+    protected draggable: string = 'hey';
+
+    protected handleDrop(data: any, event: any): void {
+        alert(`You dropped with data: ${JSON.stringify(data)}`);
+    }
+}
 </script>
 
 <style lang="scss">
