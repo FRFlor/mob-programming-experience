@@ -1,5 +1,6 @@
 <template>
     <div class="grid-handler">
+        <work-station/>
         <div class="grid">
             <grid-cell v-for="(cell, index) in cells"
                        :key="index"
@@ -18,6 +19,7 @@
     import {Component, Vue} from 'vue-property-decorator';
     import GridCell, {CellContent} from '@/components/GridCell.vue';
     import DiceRoll from '@/components/DiceRoll.vue';
+    import WorkStation from '@/components/WorkStation.vue';
 
     interface Coordinate {
         row: number;
@@ -31,7 +33,7 @@
         diceOnTop: boolean;
     }
 
-    @Component({components: {DiceRoll, GridCell}})
+    @Component({components: {WorkStation, DiceRoll, GridCell}})
     export default class GridHandler extends Vue {
         protected columns: number = 10;
         protected rows: number = 7;
