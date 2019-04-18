@@ -56,11 +56,11 @@
 
 <style lang="scss" scoped>
     .dice-roll {
-        height: 45px;
-        width: 45px;
+        background-color: white;
+        width: 100%;
+        height: 100%;
         transition: all 200ms ease;
         img {
-            height: 100%;
             max-width: 100%;
         }
 

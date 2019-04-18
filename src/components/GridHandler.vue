@@ -1,6 +1,5 @@
 <template>
     <div class="grid-handler">
-        <dice-roll/>
         <div class="grid">
             <grid-cell v-for="(cell, index) in cells"
                        :key="index"
@@ -8,6 +7,7 @@
                        :content="cell.content"
                        :active="cell.isActive"
                        :content-count="cell.contentCount"
+                       :dice-on-top="cell.diceOnTop"
                        @drag-drop="onDragDrop"/>
         </div>
     </div>
@@ -28,6 +28,7 @@
         content: CellContent;
         isActive: boolean;
         contentCount: number;
+        diceOnTop: boolean;
     }
 
     @Component({components: {DiceRoll, GridCell}})
@@ -50,6 +51,7 @@
                     isActive: false,
                     content: CellContent.Nothing,
                     contentCount: 0,
+                    diceOnTop: false,
                 };
             });
         }
@@ -77,9 +79,10 @@
             ];
 
             workersPositions.forEach((position: Coordinate) => {
-                Vue.set(this.cells[position.row * this.columns + position.column], 'content', CellContent.Worker);
-                Vue.set(this.cells[position.row * this.columns + position.column], 'contentCount', 1);
-                Vue.set(this.cells[position.row * this.columns + position.column], 'isActive', true);
+                this.cells[position.row * this.columns + position.column].content = CellContent.Worker;
+                this.cells[position.row * this.columns + position.column].contentCount = 1;
+                this.cells[position.row * this.columns + position.column].isActive = true;
+                this.cells[position.row * this.columns + position.column].diceOnTop = position.row > 1;
             }, this);
         }
 

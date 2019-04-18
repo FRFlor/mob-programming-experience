@@ -21,11 +21,17 @@
         </drop>
         <img v-if="content === CellContent.Station"
              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg" alt="station">
+        <div class="dice-container" :class="{'dice-on-top': diceOnTop}"
+             v-if="content === CellContent.Worker"
+             :style="{'grid-template-columns': `repeat(${contentCount > 3 ? '3' : contentCount}, 15px)`}">
+            <dice-roll class="dice" v-for="i in contentCount" :key="i"/>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
+    import DiceRoll from '@/components/DiceRoll.vue';
 
     export enum CellContent {
         Nothing = '',
@@ -33,11 +39,13 @@
         Station = 'station',
     }
 
-
-    @Component
+    @Component({
+        components: {DiceRoll}
+    })
     export default class GridCell extends Vue {
         @Prop({default: () => CellContent.Nothing}) protected content!: CellContent;
         @Prop({default: false, type: Boolean}) protected active!: boolean;
+        @Prop({default: false, type: Boolean}) protected diceOnTop!: boolean;
         @Prop() protected id!: number;
         @Prop({default: 1}) protected contentCount!: number;
 
@@ -94,6 +102,26 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
+
+        .dice-container {
+            display: grid;
+            grid-column-gap: 2px;
+            grid-row-gap: 2px;
+            position: absolute;
+            transform: translateY(100%);
+            bottom: 0;
+            z-index: 2;
+            &.dice-on-top {
+                top: 0;
+                transform: translateY(-100%);
+            }
+
+            .dice {
+                height: 15px;
+                width: 15px;
+            }
+        }
 
         img {
             height: 30px;
