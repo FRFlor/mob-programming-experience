@@ -18,7 +18,15 @@
         </div>
 
         <div class="workers">
-
+            <div class="worker-avatar">
+                <img v-if="numberOfWorkers === 1"
+                     src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
+                     alt="single worker">
+                <img v-else-if="numberOfWorkers > 1"
+                     src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
+                     alt="multiple workers">
+                <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -28,6 +36,7 @@
 
     @Component
     export default class WorkStation extends Vue {
+        protected numberOfWorkers: number = 1;
     }
 </script>
 
@@ -70,6 +79,31 @@
             outline: hsl(0, 0%, 20%) 1px solid;
             height: 150px;
             width: 100%;
+            .worker-avatar {
+                position: relative;
+                height: 50px;
+                width: 50px;
+                margin: 5px  auto;
+                img {
+                    height: 100%;
+                }
+
+                .count-badge {
+                    position: absolute;
+                    height: 20px;
+                    width: 20px;
+                    background-color: hsl(240, 60%, 50%);
+                    color: hsl(0, 0%, 80%);
+                    border: 1px solid hsl(0, 0%, 80%);
+                    bottom: -3px;
+                    right: -3px;
+                    border-radius: 20px;
+                    font-size: 0.85rem;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
         }
 
         .input, .output {
