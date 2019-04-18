@@ -1,5 +1,5 @@
 <template>
-    <div class="dice-roll">
+    <div class="dice-roll" :class="isRolling ? 'is-rolling' : ''">
         <img v-show="value === 1" :src="require('../assets/d1.svg')" alt="Dice face 1">
         <img v-show="value === 2" :src="require('../assets/d2.svg')" alt="Dice face 2">
         <img v-show="value === 3" :src="require('../assets/d3.svg')" alt="Dice face 3">
@@ -19,8 +19,33 @@
     @Component
     export default class DiceRoll extends Vue {
         protected value: number = 1;
+        protected isRolling: boolean = false;
 
         public roll(): void {
+            this.isRolling = true;
+            let delayMs: number = 100;
+            this.instantRoll();
+            for (let i = 0; i < 5; i++) {
+                this.delayRoll(delayMs);
+                delayMs += 100;
+            }
+            for (let i = 0; i < 5; i++) {
+                this.delayRoll(delayMs);
+                delayMs += 200;
+            }
+            for (let i = 0; i < 4; i++) {
+                this.delayRoll(delayMs);
+                delayMs += 400;
+            }
+
+            setTimeout(() => this.isRolling = false, delayMs);
+        }
+
+        private delayRoll(ms: number): void {
+            setTimeout(() => this.instantRoll(), ms);
+        }
+
+        private instantRoll(): void {
             const previous: number = this.value;
             do {
                 this.value = randomBetween(MIN, MAX);
@@ -33,9 +58,14 @@
     .dice-roll {
         height: 45px;
         width: 45px;
+        transition: all 200ms ease;
         img {
-            height: 50%;
+            height: 100%;
             max-width: 100%;
+        }
+
+        &.is-rolling {
+            transform: scale(0.75);
         }
     }
 </style>
