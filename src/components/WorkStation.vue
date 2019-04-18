@@ -39,6 +39,9 @@
                              alt="multiple workers">
                         <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
                     </div>
+                    <div class="dice-container">
+                        <dice-roll class="dice" v-for="i in numberOfWorkers" :key="i"/>
+                    </div>
                 </div>
             </drag>
         </drop>
@@ -47,8 +50,8 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
-
-    @Component
+    import DiceRoll from '@/components/DiceRoll.vue';
+    @Component({ components: {DiceRoll} })
     export default class WorkStation extends Vue {
         @Prop() protected id!: number;
         @Prop() protected numberOfWorkers!: number;
@@ -147,6 +150,19 @@
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                }
+            }
+
+            .dice-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                margin-top: 5px;
+                .dice {
+                    width: 30px;
+                    height: 30px;
+                    margin: 3px;
                 }
             }
         }
