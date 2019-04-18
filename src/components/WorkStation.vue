@@ -1,5 +1,9 @@
 <template>
     <div class="work-station">
+        <img v-show="false"
+             :src="require('../assets/mini-man.png')"
+             aria-hidden="true"
+             alt="mini man"> <!-- To force the eager load of the png -->
         <div class="station-header">
             <div class="input">
                 <h2>Input</h2>
@@ -23,7 +27,8 @@
               @dragleave="isDraggingOver = false"
               @drop="handleDrop">
             <drag class="drag-area"
-                  :transfer-data="{ sourceId: id }">
+                  :transfer-data="{ sourceId: id }"
+                  :image="require('../assets/mini-man.png')">
                 <div class="workers">
                     <div class="worker-avatar">
                         <img v-if="numberOfWorkers === 1"

@@ -39,14 +39,14 @@
         protected scale: number = 100;
 
         protected created(): void {
-            this.scale = 100*(200 * this.columns)/window.innerWidth/2;
+            this.scale = 100 * (200 * this.columns) / window.innerWidth / 2;
             this.workstationWorkers = Array.from({length: this.numberOfWorkstations}, (_: any) => 1);
             document.documentElement.style.setProperty('--column-count', `${this.columns}`);
         }
 
         @Watch('scale')
         protected onScaleChanged(): void {
-            document.documentElement.style.setProperty('--scale', `${this.scale/100}`);
+            document.documentElement.style.setProperty('--scale', `${this.scale / 100}`);
         }
 
         protected onDragDrop({sourceId, destinationId}: any): void {
