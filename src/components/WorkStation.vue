@@ -1,9 +1,11 @@
 <template>
     <div class="work-station">
+        <!-- To force the eager load of the png -->
+        <!-- Otherwise the very first drag action will have no icon -->
         <img v-show="false"
              :src="require('../assets/mini-man.png')"
              aria-hidden="true"
-             alt="mini man"> <!-- To force the eager load of the png -->
+             alt="pre-loading of the drag-icon">
         <div class="station-header">
             <div class="input">
                 <h2>Input</h2>
