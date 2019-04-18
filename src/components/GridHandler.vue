@@ -1,7 +1,6 @@
-import {CellContent} from './GridCell';
-import {CellContent} from './GridCell';
 <template>
     <div class="grid-handler">
+        <dice-roll/>
         <div class="grid">
             <grid-cell v-for="(cell, index) in cells"
                        :key="index"
@@ -18,6 +17,7 @@ import {CellContent} from './GridCell';
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import GridCell, {CellContent} from '@/components/GridCell.vue';
+    import DiceRoll from '@/components/DiceRoll.vue';
 
     interface Coordinate {
         row: number;
@@ -30,7 +30,7 @@ import {CellContent} from './GridCell';
         contentCount: number;
     }
 
-    @Component({components: {GridCell}})
+    @Component({components: {DiceRoll, GridCell}})
     export default class GridHandler extends Vue {
         protected columns: number = 10;
         protected rows: number = 7;
