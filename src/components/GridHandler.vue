@@ -39,7 +39,6 @@
         protected scale: number = 100;
 
         protected created(): void {
-            this.scale = 100 * (200 * this.columns) / window.innerWidth / 2;
             this.workstationWorkers = Array.from({length: this.numberOfWorkstations}, (_: any) => 1);
             document.documentElement.style.setProperty('--column-count', `${this.columns}`);
         }
