@@ -1,11 +1,11 @@
 <template>
-    <div class="cell" :class="{over}">
+    <div class="cell" :class="{'dragging-over' : isDraggingOver}">
         <drop v-if="active"
-              @dragover="over = true"
-              @dragleave="over = false"
+              @dragover="isDraggingOver = true"
+              @dragleave="isDraggingOver = false"
               class="drop-area"
               @drop="handleDrop">
-            <drag :transfer-data="{ example: 'styling' }">
+            <drag :transfer-data="{ sourceId: id }">
                 <img v-if="content === CellContent.Station"
                      src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg" alt="station">
                 <img v-else-if="content === CellContent.Worker"
@@ -26,17 +26,27 @@
         Station = 'station',
     }
 
+
     @Component
     export default class GridCell extends Vue {
         @Prop({default: () => CellContent.Nothing}) protected content!: CellContent;
         @Prop({default: false, type: Boolean}) protected active!: boolean;
+        @Prop() protected id!: number;
+        @Prop({default: 1}) protected contentCount!: number;
 
-        protected over: boolean = false;
+        protected isDraggingOver: boolean = false;
         protected CellContent = CellContent;
 
-        protected handleDrop(data: any): void {
-            this.over = false;
-            alert(`You dropped with data: ${JSON.stringify(data)}`);
+        protected handleDrop(payload: any): void {
+            this.isDraggingOver = false;
+            if (! payload) {
+                return;
+            }
+
+            this.$emit('drag-drop', {
+               sourceId: payload.sourceId,
+               destinationId: this.id,
+            });
         }
     }
 </script>
@@ -71,7 +81,7 @@
             }
         }
 
-        &.over {
+        &.dragging-over {
             background: red;
         }
     }

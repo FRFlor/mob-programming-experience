@@ -1,8 +1,6 @@
 <template>
     <div id="app">
         <grid-handler/>
-        <drag class="drag" :transfer-data="{ draggable }">{{ draggable }}</drag>
-        <drop class="drop" @drop="handleDrop">Dropzone</drop>
     </div>
 </template>
 

@@ -1,3 +1,4 @@
+import {CellContent} from './GridCell';
 <template>
     <div class="grid-handler">
         <div class="grid">
@@ -5,7 +6,9 @@
                        :key="index"
                        :id="index"
                        :content="cell.content"
-                       :active="cell.isActive"/>
+                       :active="cell.isActive"
+                       :content-count="cell.contentCount"
+                       @drag-drop="onDragDrop"/>
         </div>
     </div>
 </template>
@@ -23,9 +26,10 @@
     interface CellData {
         content: CellContent;
         isActive: boolean;
+        contentCount: number;
     }
 
-    @Component({ components: {GridCell} })
+    @Component({components: {GridCell}})
     export default class GridHandler extends Vue {
         protected columns: number = 10;
         protected rows: number = 7;
@@ -44,6 +48,7 @@
                 return {
                     isActive: false,
                     content: CellContent.Nothing,
+                    contentCount: 0,
                 };
             });
         }
@@ -58,6 +63,7 @@
 
             stationsPositions.forEach((position: Coordinate) => {
                 Vue.set(this.cells[position.row * this.columns + position.column], 'content', CellContent.Station);
+                Vue.set(this.cells[position.row * this.columns + position.column], 'contentCount', 1);
             }, this);
         }
 
@@ -71,8 +77,46 @@
 
             workersPositions.forEach((position: Coordinate) => {
                 Vue.set(this.cells[position.row * this.columns + position.column], 'content', CellContent.Worker);
+                Vue.set(this.cells[position.row * this.columns + position.column], 'contentCount', 1);
                 Vue.set(this.cells[position.row * this.columns + position.column], 'isActive', true);
             }, this);
+        }
+
+        protected addContentToCell(cellId: number, content: CellContent): void {
+            if (content === CellContent.Nothing) {
+                return;
+            }
+
+            if (this.cells[cellId].content === CellContent.Nothing) {
+                Vue.set(this.cells[cellId], 'content', content);
+                Vue.set(this.cells[cellId], 'contentCount', 1);
+
+                return;
+            }
+
+            if (this.cells[cellId].contentCount > 0 && this.cells[cellId].content !== content) {
+                throw new DOMException('Cannot change content of a non-empty cell');
+            }
+
+            const a  = this.cells[cellId].contentCount + 1;
+            console.log('here' + a);
+
+            Vue.set(this.cells[cellId], 'contentCount', a);
+        }
+
+        protected removeContentFromCell(cellId: number): void {
+            Vue.set(this.cells[cellId], 'contentCount', this.cells[cellId].contentCount - 1);
+            if (this.cells[cellId].contentCount <= 0) {
+                Vue.set(this.cells[cellId], 'content', CellContent.Nothing);
+                Vue.set(this.cells[cellId], 'contentCount', 0);
+            }
+        }
+
+
+
+        protected onDragDrop({sourceId, destinationId}: any): void {
+            this.addContentToCell(destinationId, this.cells[sourceId].content);
+            this.removeContentFromCell(sourceId);
         }
     }
 </script>
