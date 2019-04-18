@@ -1,15 +1,22 @@
 <template>
-    <div class="cell" :class="{'dragging-over' : isDraggingOver}">
+    <div class="cell" :class="{'dragging-over' : isDraggingOver, 'has-worker': content === CellContent.Worker}">
         <drop v-if="active"
               @dragover="isDraggingOver = true"
               @dragleave="isDraggingOver = false"
               class="drop-area"
               @drop="handleDrop">
-            <drag :transfer-data="{ sourceId: id }">
-                <img v-if="content === CellContent.Station"
-                     src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg" alt="station">
-                <img v-else-if="content === CellContent.Worker"
-                     src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg" alt="worker">
+            <drag class="drag-area"
+                  :transfer-data="{ sourceId: id }">
+                <div class="image-container">
+                    <div class="count-badge" v-if="contentCount > 1" v-text="contentCount"></div>
+                    <img v-if="content === CellContent.Station"
+                         src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg" alt="station">
+                    <img v-else-if="content === CellContent.Worker && contentCount === 1"
+                         src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg" alt="worker">
+                    <img v-else-if="content === CellContent.Worker"
+                         src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
+                         alt="workers">
+                </div>
             </drag>
         </drop>
         <img v-if="content === CellContent.Station"
@@ -39,25 +46,44 @@
 
         protected handleDrop(payload: any): void {
             this.isDraggingOver = false;
-            if (! payload) {
+            if (!payload) {
                 return;
             }
 
             this.$emit('drag-drop', {
-               sourceId: payload.sourceId,
-               destinationId: this.id,
+                sourceId: payload.sourceId,
+                destinationId: this.id,
             });
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    .drop-area {
+    .drop-area, .drag-area, .image-container {
         height: 100%;
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .drag-area {
+        position: relative;
+
+        .count-badge {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            background-color: blue;
+            color: white;
+            bottom: 3px;
+            right: 3px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     }
 
     .cell {
@@ -74,15 +100,13 @@
             width: 30px;
         }
 
-        &.worker {
-            &:hover {
-                cursor: pointer;
-                background-color: hsl(30, 92%, 60%);
-            }
+        &.has-worker:hover {
+            cursor: pointer;
+            background-color: hsl(203, 92%, 70%);
         }
 
         &.dragging-over {
-            background: red;
+            background-color: hsl(203, 50%, 40%);
         }
     }
 </style>

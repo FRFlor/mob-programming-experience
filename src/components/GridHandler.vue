@@ -1,4 +1,5 @@
 import {CellContent} from './GridCell';
+import {CellContent} from './GridCell';
 <template>
     <div class="grid-handler">
         <div class="grid">
@@ -62,8 +63,8 @@ import {CellContent} from './GridCell';
             ];
 
             stationsPositions.forEach((position: Coordinate) => {
-                Vue.set(this.cells[position.row * this.columns + position.column], 'content', CellContent.Station);
-                Vue.set(this.cells[position.row * this.columns + position.column], 'contentCount', 1);
+                this.cells[position.row * this.columns + position.column].content = CellContent.Station;
+                this.cells[position.row * this.columns + position.column].contentCount = 1;
             }, this);
         }
 
@@ -88,8 +89,8 @@ import {CellContent} from './GridCell';
             }
 
             if (this.cells[cellId].content === CellContent.Nothing) {
-                Vue.set(this.cells[cellId], 'content', content);
-                Vue.set(this.cells[cellId], 'contentCount', 1);
+                this.cells[cellId].content = content;
+                this.cells[cellId].contentCount = 1;
 
                 return;
             }
@@ -98,17 +99,16 @@ import {CellContent} from './GridCell';
                 throw new DOMException('Cannot change content of a non-empty cell');
             }
 
-            const a  = this.cells[cellId].contentCount + 1;
-            console.log('here' + a);
 
-            Vue.set(this.cells[cellId], 'contentCount', a);
+            this.cells[cellId].contentCount++;
         }
 
         protected removeContentFromCell(cellId: number): void {
-            Vue.set(this.cells[cellId], 'contentCount', this.cells[cellId].contentCount - 1);
+
+            this.cells[cellId].contentCount--;
             if (this.cells[cellId].contentCount <= 0) {
-                Vue.set(this.cells[cellId], 'content', CellContent.Nothing);
-                Vue.set(this.cells[cellId], 'contentCount', 0);
+                this.cells[cellId].content = CellContent.Nothing;
+                this.cells[cellId].contentCount = 0;
             }
         }
 
