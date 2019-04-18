@@ -6,7 +6,7 @@
             </div>
 
             <div class="station-title">
-                <h2>Station X</h2>
+                <h2>Station {{id + 1}}</h2>
                 <img class="computer-image"
                      src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg"
                      alt="Computer">
@@ -17,30 +17,58 @@
             </div>
         </div>
 
-        <div class="workers">
-            <div class="worker-avatar">
-                <img v-if="numberOfWorkers === 1"
-                     src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
-                     alt="single worker">
-                <img v-else-if="numberOfWorkers > 1"
-                     src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
-                     alt="multiple workers">
-                <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
-            </div>
-        </div>
+        <drop class="workers-area drop-area"
+              :class="{'dragging-over' : isDraggingOver}"
+              @dragover="isDraggingOver = true"
+              @dragleave="isDraggingOver = false"
+              @drop="handleDrop">
+            <drag class="drag-area"
+                  :transfer-data="{ sourceId: id }">
+                <div class="workers">
+                    <div class="worker-avatar">
+                        <img v-if="numberOfWorkers === 1"
+                             src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
+                             alt="single worker">
+                        <img v-else-if="numberOfWorkers > 1"
+                             src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
+                             alt="multiple workers">
+                        <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
+                    </div>
+                </div>
+            </drag>
+        </drop>
     </div>
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
 
     @Component
     export default class WorkStation extends Vue {
-        protected numberOfWorkers: number = 1;
+        @Prop() protected id!: number;
+        @Prop() protected numberOfWorkers!: number;
+        protected isDraggingOver: boolean = false;
+
+        protected handleDrop(payload: any): void {
+            this.isDraggingOver = false;
+            if (!payload) {
+                return;
+            }
+
+            this.$emit('drag-drop', {
+                sourceId: payload.sourceId,
+                destinationId: this.id,
+            });
+        }
     }
 </script>
 
 <style lang="scss" scoped>
+    .drag-area, .drop-area {
+        width: 100%;
+        height: 100%;
+    }
+
     .work-station {
         height: 100%;
         width: 200px;
@@ -71,19 +99,31 @@
             width: 100%;
             align-items: center;
             justify-content: center;
-            background-color: hsl(203, 92%, 90%);
+            background-color: hsl(100, 92%, 90%);
         }
 
-        .workers {
-            background-color: hsl(100, 92%, 90%);
+        .workers-area {
+            background-color: hsl(203, 92%, 90%);
             outline: hsl(0, 0%, 20%) 1px solid;
             height: 150px;
             width: 100%;
+
+            :hover {
+                cursor: pointer;
+                background-color: hsl(203, 92%, 70%);
+            }
+
+            &.dragging-over {
+                background-color: hsl(203, 50%, 40%);
+            }
+
             .worker-avatar {
                 position: relative;
                 height: 50px;
                 width: 50px;
-                margin: 5px  auto;
+                padding-top: 5px;
+                margin: 0 auto;
+
                 img {
                     height: 100%;
                 }

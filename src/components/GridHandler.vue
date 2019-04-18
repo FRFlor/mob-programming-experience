@@ -1,127 +1,61 @@
 <template>
     <div class="grid-handler">
-        <work-station/>
         <div class="grid">
-            <grid-cell v-for="(cell, index) in cells"
-                       :key="index"
-                       :id="index"
-                       :content="cell.content"
-                       :active="cell.isActive"
-                       :content-count="cell.contentCount"
-                       :dice-on-top="cell.diceOnTop"
-                       @drag-drop="onDragDrop"/>
+            <!-- Top Stations -->
+            <work-station :id="0" :number-of-workers="workstationWorkers[0]" @drag-drop="onDragDrop"/>
+            <work-station :id="1" :number-of-workers="workstationWorkers[1]" @drag-drop="onDragDrop"/>
+            <work-station :id="2" :number-of-workers="workstationWorkers[2]" @drag-drop="onDragDrop"/>
+            <work-station :id="3" :number-of-workers="workstationWorkers[3]" @drag-drop="onDragDrop"/>
+
+            <div class="empty-cell"></div>
+            <div class="empty-cell"></div>
+            <div class="empty-cell"></div>
+            <work-station :id="4" :number-of-workers="workstationWorkers[4]" @drag-drop="onDragDrop"/>
+
+            <div class="empty-cell"></div>
+            <div class="empty-cell"></div>
+            <div class="empty-cell"></div>
+            <work-station :id="5" :number-of-workers="workstationWorkers[5]" @drag-drop="onDragDrop"/>
+
+            <!-- Bottom Stations -->
+            <work-station :id="9" :number-of-workers="workstationWorkers[9]" @drag-drop="onDragDrop"/>
+            <work-station :id="8" :number-of-workers="workstationWorkers[8]" @drag-drop="onDragDrop"/>
+            <work-station :id="7" :number-of-workers="workstationWorkers[7]" @drag-drop="onDragDrop"/>
+            <work-station :id="6" :number-of-workers="workstationWorkers[6]" @drag-drop="onDragDrop"/>
         </div>
     </div>
 </template>
 
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
-    import GridCell, {CellContent} from '@/components/GridCell.vue';
-    import DiceRoll from '@/components/DiceRoll.vue';
+    import {Component, Vue, Watch} from 'vue-property-decorator';
     import WorkStation from '@/components/WorkStation.vue';
 
-    interface Coordinate {
-        row: number;
-        column: number;
-    }
-
-    interface CellData {
-        content: CellContent;
-        isActive: boolean;
-        contentCount: number;
-        diceOnTop: boolean;
-    }
-
-    @Component({components: {WorkStation, DiceRoll, GridCell}})
+    @Component({components: {WorkStation}})
     export default class GridHandler extends Vue {
-        protected columns: number = 10;
-        protected rows: number = 7;
-        protected cells: CellData[] = [];
+        protected columns: number = 4;
+        protected numberOfWorkstations: number = 10;
+        protected workstationWorkers: number[] = [];
+        protected scale: number = 100;
 
-        private created(): void {
-            this.generateEmptyGrid();
-            this.populateGridWithStations();
-            this.populateGridWithWorkers();
-
+        protected created(): void {
+            this.scale = 100*(200 * this.columns)/window.innerWidth/2;
+            this.workstationWorkers = Array.from({length: this.numberOfWorkstations}, (_: any) => 1);
             document.documentElement.style.setProperty('--column-count', `${this.columns}`);
         }
 
-        private generateEmptyGrid(): void {
-            this.cells = Array.from({length: this.columns * this.rows}, (_: any) => {
-                return {
-                    isActive: false,
-                    content: CellContent.Nothing,
-                    contentCount: 0,
-                    diceOnTop: false,
-                };
-            });
+        @Watch('scale')
+        protected onScaleChanged(): void {
+            document.documentElement.style.setProperty('--scale', `${this.scale/100}`);
         }
-
-        private populateGridWithStations(): void {
-            const stationsPositions: Coordinate[] = [
-                {row: 0, column: 1}, {row: 0, column: 3}, {row: 0, column: 5}, {row: 0, column: 7},
-                {row: 2, column: 8},
-                {row: 4, column: 8},
-                {row: 6, column: 1}, {row: 6, column: 3}, {row: 6, column: 5}, {row: 6, column: 7},
-            ];
-
-            stationsPositions.forEach((position: Coordinate) => {
-                this.cells[position.row * this.columns + position.column].content = CellContent.Station;
-                this.cells[position.row * this.columns + position.column].contentCount = 1;
-            }, this);
-        }
-
-        private populateGridWithWorkers(): void {
-            const workersPositions: Coordinate[] = [
-                {row: 1, column: 1}, {row: 1, column: 3}, {row: 1, column: 5}, {row: 1, column: 7},
-                {row: 2, column: 9},
-                {row: 4, column: 9},
-                {row: 5, column: 1}, {row: 5, column: 3}, {row: 5, column: 5}, {row: 5, column: 7},
-            ];
-
-            workersPositions.forEach((position: Coordinate) => {
-                this.cells[position.row * this.columns + position.column].content = CellContent.Worker;
-                this.cells[position.row * this.columns + position.column].contentCount = 1;
-                this.cells[position.row * this.columns + position.column].isActive = true;
-                this.cells[position.row * this.columns + position.column].diceOnTop = position.row > 1;
-            }, this);
-        }
-
-        protected addContentToCell(cellId: number, content: CellContent): void {
-            if (content === CellContent.Nothing) {
-                return;
-            }
-
-            if (this.cells[cellId].content === CellContent.Nothing) {
-                this.cells[cellId].content = content;
-                this.cells[cellId].contentCount = 1;
-
-                return;
-            }
-
-            if (this.cells[cellId].contentCount > 0 && this.cells[cellId].content !== content) {
-                throw new DOMException('Cannot change content of a non-empty cell');
-            }
-
-
-            this.cells[cellId].contentCount++;
-        }
-
-        protected removeContentFromCell(cellId: number): void {
-
-            this.cells[cellId].contentCount--;
-            if (this.cells[cellId].contentCount <= 0) {
-                this.cells[cellId].content = CellContent.Nothing;
-                this.cells[cellId].contentCount = 0;
-            }
-        }
-
-
 
         protected onDragDrop({sourceId, destinationId}: any): void {
-            this.addContentToCell(destinationId, this.cells[sourceId].content);
-            this.removeContentFromCell(sourceId);
+            if (this.workstationWorkers[sourceId] <= 0) {
+                return;
+            }
+
+            Vue.set(this.workstationWorkers, sourceId, this.workstationWorkers[sourceId] - 1);
+            Vue.set(this.workstationWorkers, destinationId, this.workstationWorkers[destinationId] + 1);
         }
     }
 </script>
@@ -129,6 +63,16 @@
 <style lang="scss" scoped>
     .grid {
         display: grid;
-        grid-template-columns: repeat(var(--column-count), 50px);
+        grid-template-columns: repeat(var(--column-count), 200px);
+        transform-origin: 0 0;
+        transform: scale(var(--scale));
+
+        .empty-cell {
+            width: 100%;
+            height: 100%;
+            background-color: hsl(203, 92%, 95%);
+            outline: hsl(0, 0%, 80%) 1px solid;
+            z-index: -1;
+        }
     }
 </style>
