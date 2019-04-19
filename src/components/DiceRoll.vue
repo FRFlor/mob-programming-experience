@@ -19,7 +19,7 @@
     @Component({
         model: {
             prop: 'rollValue',
-            event: 'roll-finished',
+            event: 'instant-roll',
         }
     })
     export default class DiceRoll extends Vue {
@@ -46,6 +46,7 @@
 
             setTimeout(() => {
                 this.isRolling = false;
+                this.$emit('animated-roll-finished');
             }, delayMs);
         }
 
@@ -60,7 +61,7 @@
             do {
                 newValue = randomBetween(MIN, MAX);
             } while (newValue === previous);
-            this.$emit('roll-finished', newValue);
+            this.$emit('instant-roll', newValue);
         }
     }
 </script>
@@ -70,6 +71,7 @@
         background-color: white;
         width: 100%;
         height: 100%;
+        border-radius: 6px;
         transition: all 400ms ease;
         img {
             width: 100%;

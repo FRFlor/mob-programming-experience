@@ -9,7 +9,8 @@
         <div class="station-header">
             <div class="input">
                 <h2>Input</h2>
-                <div class="value">{{input}}</div>
+                <div class="value" v-if="input === Infinity">∞</div>
+                <div class="value" v-else>{{input}}</div>
             </div>
 
             <div class="station-title">
@@ -18,13 +19,14 @@
                     <img class="computer-image"
                          src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg"
                          alt="Computer">
-                    <div class="effort-badge" v-text="effort" v-show="effort > 0">
+                    <div class="effort-badge" v-text="remainingEffort" v-show="totalEffortProduced > 0">
                     </div>
                 </div>
             </div>
 
             <div class="output">
                 <h2>Output</h2>
+                <div class="value">{{output}}</div>
             </div>
         </div>
 
@@ -51,6 +53,7 @@
                                    v-for="(_, index) in numberOfWorkers"
                                    :ref="`station-${id}-dice-${index}`"
                                    v-model="diceValues[index]"
+                                   @animated-roll-finished="onRollFinished"
                                    :key="index"/>
                     </div>
                 </div>
@@ -67,15 +70,51 @@
         @Prop() protected id!: number;
         @Prop() protected numberOfWorkers!: number;
         @Prop({default: 0}) protected input!: number;
+        @Prop({default: 0}) protected output!: number;
+
+
+        protected diceValues: number[] = [];
 
         protected isDraggingOver: boolean = false;
-        protected diceValues: number[] = [];
+        protected isProcessingEffort: boolean = false;
+        protected remainingEffort: number = 0;
+
+        protected onRollFinished(): void {
+            if (this.isProcessingEffort) {
+                return;
+            }
+
+            this.isProcessingEffort = true;
+            setTimeout(() => {
+                this.remainingEffort = this.totalEffortProduced;
+               this.processEffort();
+            }, 350);
+        }
+
+        protected processEffort(): void {
+            if (this.remainingEffort === 0 || this.input === 0) {
+                this.isProcessingEffort = false;
+                return;
+            }
+
+            this.remainingEffort--;
+            this.$emit('decrement-input');
+            this.$emit('increment-output');
+            setTimeout(() => {
+                this.processEffort();
+            }, 500);
+        }
 
         public work(): void {
 
         }
 
-        protected get effort(): number {
+        @Watch('totalEffortProduced')
+        protected updateEffort(): void {
+            this.remainingEffort = this.totalEffortProduced;
+        }
+
+        protected get totalEffortProduced(): number {
             return this.diceValues.reduce( (prev: number, currentValue: number) => currentValue + prev, 0);
         }
 
@@ -152,11 +191,11 @@
 
                 .effort-badge {
                     position: absolute;
-                    height: 13.8px;
+                    height: 14px;
                     width: 22px;
                     background-color: rgba(51, 51, 204, 0.77);
                     color: hsl(0, 0%, 80%);
-                    bottom: 14.3px;
+                    bottom: 14.1px;
                     right: 39.3px;
                     font-size: 0.85rem;
                     display: flex;
