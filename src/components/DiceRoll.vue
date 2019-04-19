@@ -1,11 +1,11 @@
 <template>
     <div class="dice-roll" :class="isRolling ? 'is-rolling' : ''">
-        <img v-show="temporaryValue === 1" :src="require('../assets/d1.svg')" alt="Dice face 1">
-        <img v-show="temporaryValue === 2" :src="require('../assets/d2.svg')" alt="Dice face 2">
-        <img v-show="temporaryValue === 3" :src="require('../assets/d3.svg')" alt="Dice face 3">
-        <img v-show="temporaryValue === 4" :src="require('../assets/d4.svg')" alt="Dice face 4">
-        <img v-show="temporaryValue === 5" :src="require('../assets/d5.svg')" alt="Dice face 5">
-        <img v-show="temporaryValue === 6" :src="require('../assets/d6.svg')" alt="Dice face 6">
+        <img v-show="rollValue === 1" :src="require('../assets/d1.svg')" alt="Dice face 1">
+        <img v-show="rollValue === 2" :src="require('../assets/d2.svg')" alt="Dice face 2">
+        <img v-show="rollValue === 3" :src="require('../assets/d3.svg')" alt="Dice face 3">
+        <img v-show="rollValue === 4" :src="require('../assets/d4.svg')" alt="Dice face 4">
+        <img v-show="rollValue === 5" :src="require('../assets/d5.svg')" alt="Dice face 5">
+        <img v-show="rollValue === 6" :src="require('../assets/d6.svg')" alt="Dice face 6">
     </div>
 </template>
 
@@ -25,7 +25,6 @@
     export default class DiceRoll extends Vue {
         @Prop({default: 1}) rollValue!: number;
 
-        protected temporaryValue: number = 1;
         protected isRolling: boolean = false;
 
         public roll(): void {
@@ -47,7 +46,6 @@
 
             setTimeout(() => {
                 this.isRolling = false;
-                this.$emit('roll-finished', this.temporaryValue);
             }, delayMs);
         }
 
@@ -56,10 +54,13 @@
         }
 
         private instantRoll(): void {
-            const previous: number = this.temporaryValue;
+            const previous: number = this.rollValue;
+            let newValue: number = previous;
+
             do {
-                this.temporaryValue = randomBetween(MIN, MAX);
-            } while (this.temporaryValue === previous);
+                newValue = randomBetween(MIN, MAX);
+            } while (newValue === previous);
+            this.$emit('roll-finished', newValue);
         }
     }
 </script>
