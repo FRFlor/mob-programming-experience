@@ -33,20 +33,25 @@
                   :transfer-data="{ sourceId: id }"
                   :image="require('../assets/mini-man.png')">
                 <div class="workers">
-                    <div class="worker-avatar">
-                        <img v-if="numberOfWorkers === 1"
-                             src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
-                             alt="single worker">
-                        <img v-else-if="numberOfWorkers > 1"
-                             src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
-                             alt="multiple workers">
-                        <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
+                    <div class="workers-hud">
+                        <div class="worker-avatar">
+                            <img v-if="numberOfWorkers === 1"
+                                 src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
+                                 alt="single worker">
+                            <img v-else-if="numberOfWorkers > 1"
+                                 src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
+                                 alt="multiple workers">
+                            <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
+                        </div>
+                        <div class="effort-bubble" v-text="effort" v-show="effort > 0">
+                        </div>
                     </div>
                     <div class="dice-container">
                         <dice-roll class="dice"
-                                   :ref="`station-${id}-dice-${i}`"
-                                   v-for="i in numberOfWorkers"
-                                   :key="i"/>
+                                   v-for="(_, index) in numberOfWorkers"
+                                   :ref="`station-${id}-dice-${index}`"
+                                   v-model="diceValues[index]"
+                                   :key="index"/>
                     </div>
                 </div>
             </drag>
@@ -64,17 +69,26 @@
         @Prop({default: 0}) protected input!: number;
 
         protected isDraggingOver: boolean = false;
+        protected diceValues: number[] = [];
 
         public work(): void {
 
         }
 
+        protected get effort(): number {
+            return this.diceValues.reduce( (prev: number, currentValue: number) => currentValue + prev, 0);
+        }
+
         protected rollDice(): void {
+            if (this.getDice().length === 0) {
+                return;
+            }
+
             this.getDice().forEach( (die:any) => die.roll());
         }
 
         private  getDice(): any[] {
-            return Object.values(this.$refs).map( (wrapper: any) => wrapper[0]);
+            return Object.values(this.$refs).map( (wrapper: any) => wrapper[0]).filter( _ => _);
         }
 
         protected handleDrop(payload: any): void {
@@ -145,33 +159,50 @@
                 background-color: hsl(203, 50%, 40%);
             }
 
-            .worker-avatar {
-                position: relative;
-                height: 50px;
-                width: 50px;
-                padding-top: 5px;
-                margin: 0 auto;
+            .workers-hud{
+                transition: all 2s ease;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                .worker-avatar {
+                    position: relative;
+                    height: 50px;
+                    width: 50px;
+                    padding-top: 5px;
 
-                img {
-                    height: 100%;
+                    img {
+                        height: 100%;
+                    }
+
+                    .count-badge {
+                        position: absolute;
+                        height: 20px;
+                        width: 20px;
+                        background-color: hsl(240, 60%, 50%);
+                        color: hsl(0, 0%, 80%);
+                        border: 1px solid hsl(0, 0%, 80%);
+                        bottom: -3px;
+                        right: -3px;
+                        border-radius: 20px;
+                        font-size: 0.85rem;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
                 }
-
-                .count-badge {
-                    position: absolute;
-                    height: 20px;
-                    width: 20px;
+                .effort-bubble {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 35px;
+                    width: 35px;
+                    font-size: 1.5rem;
                     background-color: hsl(240, 60%, 50%);
                     color: hsl(0, 0%, 80%);
                     border: 1px solid hsl(0, 0%, 80%);
-                    bottom: -3px;
-                    right: -3px;
-                    border-radius: 20px;
-                    font-size: 0.85rem;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
                 }
             }
+
 
             .dice-container {
                 display: flex;

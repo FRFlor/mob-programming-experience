@@ -59,8 +59,12 @@
             Vue.set(this.workstationWorkers, destinationId, this.workstationWorkers[destinationId] + 1);
         }
 
+        private get workstations() {
+            return this.$children.filter((child) => child.$el.className.includes('work-station'));
+        }
+
         protected workTheDay(): void {
-            alert('work!');
+            this.workstations.forEach((workstation: any) => workstation.rollDice());
         }
     }
 </script>
