@@ -59,7 +59,7 @@
         background-color: white;
         width: 100%;
         height: 100%;
-        transition: all 200ms ease;
+        transition: all 400ms ease;
         img {
             width: 100%;
             height: 100%;

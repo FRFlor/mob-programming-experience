@@ -9,6 +9,7 @@
         <div class="station-header">
             <div class="input">
                 <h2>Input</h2>
+                <div class="value">{{input}}</div>
             </div>
 
             <div class="station-title">
@@ -42,7 +43,10 @@
                         <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
                     </div>
                     <div class="dice-container">
-                        <dice-roll class="dice" v-for="i in numberOfWorkers" :key="i"/>
+                        <dice-roll class="dice"
+                                   :ref="`station-${id}-dice-${i}`"
+                                   v-for="i in numberOfWorkers"
+                                   :key="i"/>
                     </div>
                 </div>
             </drag>
@@ -57,7 +61,21 @@
     export default class WorkStation extends Vue {
         @Prop() protected id!: number;
         @Prop() protected numberOfWorkers!: number;
+        @Prop({default: 0}) protected input!: number;
+
         protected isDraggingOver: boolean = false;
+
+        public work(): void {
+
+        }
+
+        protected rollDice(): void {
+            this.getDice().forEach( (die:any) => die.roll());
+        }
+
+        private  getDice(): any[] {
+            return Object.values(this.$refs).map( (wrapper: any) => wrapper[0]);
+        }
 
         protected handleDrop(payload: any): void {
             this.isDraggingOver = false;
@@ -172,9 +190,16 @@
         .input, .output {
             text-align: center;
             background-color: hsl(39, 100%, 85%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             min-width: 50px;
             min-height: 50px;
             outline: hsl(0, 0%, 20%) 1px solid;
+            .value {
+                margin-bottom: 0.5rem;
+                font-size: 1.25rem;
+            }
         }
     }
 
