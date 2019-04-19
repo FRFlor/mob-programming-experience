@@ -20,10 +20,10 @@
         model: {
             prop: 'rollValue',
             event: 'instant-roll',
-        }
+        },
     })
     export default class DiceRoll extends Vue {
-        @Prop({default: 1}) rollValue!: number;
+        @Prop({default: 1}) protected rollValue!: number;
 
         protected isRolling: boolean = false;
 

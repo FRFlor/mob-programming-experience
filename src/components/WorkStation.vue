@@ -65,7 +65,8 @@
 <script lang="ts">
     import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import DiceRoll from '@/components/DiceRoll.vue';
-    @Component({ components: {DiceRoll} })
+
+    @Component({components: {DiceRoll}})
     export default class WorkStation extends Vue {
         @Prop() protected id!: number;
         @Prop() protected numberOfWorkers!: number;
@@ -87,7 +88,7 @@
             this.isProcessingEffort = true;
             setTimeout(() => {
                 this.remainingEffort = this.totalEffortProduced;
-               this.processEffort();
+                this.processEffort();
             }, 350);
         }
 
@@ -105,17 +106,13 @@
             }, 500);
         }
 
-        public work(): void {
-
-        }
-
         @Watch('totalEffortProduced')
         protected updateEffort(): void {
             this.remainingEffort = this.totalEffortProduced;
         }
 
         protected get totalEffortProduced(): number {
-            return this.diceValues.reduce( (prev: number, currentValue: number) => currentValue + prev, 0);
+            return this.diceValues.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
         }
 
         protected rollDice(): void {
@@ -123,16 +120,7 @@
                 return;
             }
 
-            this.getDice().forEach( (die:any) => die.roll());
-        }
-
-        private  getDice(): any[] {
-            return Object.values(this.$refs).map( (wrapper: any) => wrapper[0]).filter( _ => _);
-        }
-
-        @Watch('numberOfWorkers')
-        private resetDiceValues() {
-            this.diceValues = [];
+            this.getDice().forEach((die: any) => die.roll());
         }
 
         protected handleDrop(payload: any): void {
@@ -145,6 +133,15 @@
                 sourceId: payload.sourceId,
                 destinationId: this.id,
             });
+        }
+
+        private getDice(): any[] {
+            return Object.values(this.$refs).map((wrapper: any) => wrapper[0]).filter((_) => _);
+        }
+
+        @Watch('numberOfWorkers')
+        private resetDiceValues() {
+            this.diceValues = [];
         }
     }
 </script>
@@ -179,6 +176,7 @@
                     width: 30px;
                 }
             }
+
             display: flex;
             height: 50px;
             width: 100%;
@@ -255,6 +253,7 @@
                 justify-content: center;
                 align-items: center;
                 margin-top: 5px;
+
                 .dice {
                     width: 30px;
                     height: 30px;
@@ -272,6 +271,7 @@
             min-width: 50px;
             min-height: 50px;
             outline: hsl(0, 0%, 20%) 1px solid;
+
             .value {
                 margin-bottom: 0.5rem;
                 font-size: 1.25rem;
