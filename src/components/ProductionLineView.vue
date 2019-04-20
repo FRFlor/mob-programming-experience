@@ -5,19 +5,23 @@
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
                  v-for="i in [0, 1, 2, 3]">
                 <workstation-view :id="i"
+                                  :flow-direction="FlowDirection.LeftToRight"
                                   @drag-drop="onDragDrop"
                                   :workstation="stationChain.workStations[i]"/>
             </div>
+            <div class="empty-cell"></div>
 
             <div class="empty-cell">
                 <button @click="stationChain.work()">Work!</button>
             </div>
             <div class="empty-cell"></div>
             <div class="empty-cell"></div>
+            <div class="empty-cell"></div>
 
 
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, 4)">
                 <workstation-view :id="4"
+                                  :flow-direction="FlowDirection.TopToBottom"
                                   @drag-drop="onDragDrop"
                                   :workstation="stationChain.workStations[4]"/>
             </div>
@@ -25,8 +29,10 @@
             <div class="empty-cell"></div>
             <div class="empty-cell"></div>
             <div class="empty-cell"></div>
+            <div class="empty-cell"></div>
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, 5)">
                 <workstation-view :id="5"
+                                  :flow-direction="FlowDirection.TopToBottom"
                                   @drag-drop="onDragDrop"
                                   :workstation="stationChain.workStations[5]"/>
             </div>
@@ -35,9 +41,12 @@
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
                  v-for="i in [9, 8, 7, 6]">
                 <workstation-view :id="i"
+                                  :flow-direction="FlowDirection.RightToLeft"
                                   @drag-drop="onDragDrop"
-                                  :workstation="stationChain.workStations[i]"/>
+                                  :workstation="stationChain.workStations[i]"
+                                  right-to-left/>
             </div>
+            <div class="empty-cell"></div>
         </div>
 
         <vue-context ref="menu">
@@ -51,17 +60,18 @@
 
 <script lang="ts">
     import {Component, Vue, Watch} from 'vue-property-decorator';
-    import WorkstationView from '@/components/WorkstationView.vue';
+    import WorkstationView, {FlowDirection} from '@/components/WorkstationView.vue';
     import {VueContext} from 'vue-context';
     import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
 
     @Component({components: {WorkstationView, VueContext}})
     export default class ProductionLineView extends Vue {
-        protected columns: number = 4;
+        protected columns: number = 5;
         protected contextStation: number = 0;
         protected scale: number = 100;
         protected stationChain: ProductionLine = new ProductionLine(new DiceFactory());
+        protected FlowDirection = FlowDirection;
 
         protected created(): void {
             document.documentElement.style.setProperty('--column-count', `${this.columns}`);

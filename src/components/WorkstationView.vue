@@ -33,11 +33,12 @@
         </div>
 
         <drop class="workers-area drop-area"
-              :class="{'dragging-over' : isDraggingOver}"
               @dragover="isDraggingOver = true"
               @dragleave="isDraggingOver = false"
               @drop="handleDrop">
             <drag class="drag-area"
+                  :style="backgroundArrow"
+                  :class="{'dragging-over' : isDraggingOver}"
                   :transfer-data="{ sourceId: id }"
                   :image="require('../assets/mini-man.png')">
                 <div class="workers">
@@ -69,10 +70,18 @@
     import DiceView from '@/components/DiceView.vue';
     import {WorkStation} from '@/classes/WorkStation';
 
+    export enum FlowDirection {
+        LeftToRight = 'left-to-right',
+        RightToLeft = 'right-to-left',
+        TopToBottom = 'top-to-bottom',
+        BottomToTop = 'bottom-to-top',
+    }
+
     @Component({components: {DiceView}})
     export default class WorkstationView extends Vue {
         @Prop() protected id!: number;
         @Prop() protected workstation!: WorkStation;
+        @Prop({default: FlowDirection.LeftToRight}) protected flowDirection!: FlowDirection;
 
         protected isDraggingOver: boolean = false;
 
@@ -87,6 +96,18 @@
                 destinationId: this.id,
             });
         }
+
+        protected get backgroundArrow(): string {
+            const BASE_URL: string = `https://res.cloudinary.com/felipeflor/image/upload`;
+            const ANGLE: number = {
+                'top-to-bottom': 0,
+                'right-to-left': 90,
+                'bottom-to-top': 180,
+                'left-to-right': 270,
+            }[this.flowDirection];
+
+            return `background-image: url('${BASE_URL}/a_${ANGLE}/v1555784793/down-arrow.png')`;
+        }
     }
 </script>
 
@@ -94,6 +115,25 @@
     .drag-area, .drop-area {
         width: 100%;
         height: 100%;
+        background-color: hsl(203, 92%, 90%);
+        background-size: 125px;
+        background-blend-mode: overlay;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        &.dragging-over {
+            background-color: hsl(203, 50%, 40%);
+        }
+
+        &:hover {
+            cursor: pointer;
+
+            &.dragging-over {
+                background-color: hsl(203, 50%, 40%);
+            }
+
+            background-color: hsl(203, 92%, 70%);
+        }
     }
 
     .work-station {
@@ -149,19 +189,9 @@
         }
 
         .workers-area {
-            background-color: hsl(203, 92%, 90%);
             outline: hsl(0, 0%, 20%) 1px solid;
             height: 150px;
             width: 100%;
-
-            :hover {
-                cursor: pointer;
-                background-color: hsl(203, 92%, 70%);
-            }
-
-            &.dragging-over {
-                background-color: hsl(203, 50%, 40%);
-            }
 
             .worker-avatar {
                 position: relative;
