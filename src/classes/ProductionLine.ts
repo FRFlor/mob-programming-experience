@@ -21,6 +21,7 @@ export class ProductionLine {
 
     public async work(): Promise<void> {
         await this.generateProducts();
+        await new Promise((resolve) => setTimeout(resolve, 500));
         await this.moveAllProductsAlong();
     }
 
@@ -45,7 +46,7 @@ export class ProductionLine {
         while (source.output > 0) {
             source.decrementOutput();
             destination.incrementInput();
-            const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 500);
+            const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 300);
             await new Promise((resolve) => setTimeout(resolve, waitTime * ProductionLine.WAIT_MULTIPLIER));
         }
     }

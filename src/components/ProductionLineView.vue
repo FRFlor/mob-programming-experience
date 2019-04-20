@@ -12,10 +12,14 @@
             <div class="empty-cell"></div>
 
             <div class="empty-cell">
+                <button @click="stationChain.generateProducts()">Generate Products!</button>
+            </div>
+            <div class="empty-cell">
+                <button @click="stationChain.moveAllProductsAlong()">Move Products!</button>
+            </div>
+            <div class="empty-cell">
                 <button @click="stationChain.work()">Work!</button>
             </div>
-            <div class="empty-cell"></div>
-            <div class="empty-cell"></div>
             <div class="empty-cell"></div>
 
 

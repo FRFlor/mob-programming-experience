@@ -104,7 +104,7 @@ export class WorkStation {
             //  - 500ms if remaining effort is 3 or less
             //  - 50ms at the fastest (if remaining effort is a large value)
             const referenceTime: number = Math.min(this.effortRemaining, this.input);
-            const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 500);
+            const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 300);
             await new Promise((resolve) => setTimeout(resolve, waitTime * WorkStation.WAIT_MULTIPLIER));
         }
     }
