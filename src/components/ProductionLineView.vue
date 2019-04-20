@@ -17,22 +17,26 @@
             </div>
 
             <div class="control-center" :style="{'grid-area': `controls`}">
+                <div class="days-of-operation">
+                    <h2>Days of Operation</h2>
+                    <div class="value">{{stationChain.days}}</div>
+                </div>
                 <div class="animation-duration-slider">
                     <label for="animation_duration_slider">Animation Duration</label>
                     <vue-slider direction="btt"
                                 id="animation_duration_slider"
                                 height="80px"
                                 width="10px"
-                                max="2"
-                                interval="0.1"
-                                min="0"
+                                :max="2"
+                                :interval="0.1"
+                                :min="0"
                                 tooltip-formatter="Animation Duration: x{value}"
                                 tooltip-placement="right"
                                 v-model="animationMultiplier"/>
                 </div>
 
                 <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
-                <button @click="fastForwardCycles" :disabled="isBusy">Work 10 days!</button>
+                <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
             </div>
         </div>
 
@@ -80,9 +84,11 @@
             this.isBusy = false;
         }
 
-        protected async fastForwardCycles(): Promise<void> {
+        protected async fastForwardCycles(numberOfDays: number): Promise<void> {
             this.isBusy = true;
-            await this.stationChain.fastForwardWork();
+            for (let i = 0; i < numberOfDays; i++) {
+                await this.stationChain.work();
+            }
             this.isBusy = false;
         }
 
@@ -115,7 +121,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .animation-duration-slider {
+    .days-of-operation, .animation-duration-slider {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -123,7 +129,15 @@
         background-color: hsl(203, 60%, 85%);
         border: hsl(203, 40%, 30%) solid 1px;
         height: 8rem;
-        padding-bottom: 0.5rem;
+        padding: 0.5rem;
+
+        .value {
+            font-size: 2rem;
+        }
+        h2 {
+            font-size: 1rem;
+            margin: 0;
+        }
         label {
             font-size: 0.75rem;
             width: 5rem;

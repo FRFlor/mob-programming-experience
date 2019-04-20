@@ -1,6 +1,5 @@
 import {WorkStation} from '@/classes/WorkStation';
 import {IRngFactory} from '@/interfaces/IRngFactory';
-import {Dice} from '@/classes/Dice';
 
 const assertWorkstationExists = (id: number) => {
     if (id < 0 || id >= ProductionLine.STATIONS_COUNT) {
@@ -13,6 +12,7 @@ export class ProductionLine {
     public static STARTING_INPUT: number = 3;
     public static STATIONS_COUNT: number = 10;
     public workStations: WorkStation[];
+    private daysElapsed: number = 0;
 
     constructor(rngFactory: IRngFactory) {
         this.workStations = Array.from({length: ProductionLine.STATIONS_COUNT}, () => new WorkStation(rngFactory));
@@ -20,46 +20,16 @@ export class ProductionLine {
         this.workStations[0].setInput(Infinity);
     }
 
+    public get days(): number {
+        return this.daysElapsed;
+    }
+
     public async work(): Promise<void> {
         await this.generateProducts();
         await new Promise((resolve) => setTimeout(resolve, 300 * ProductionLine.WAIT_MULTIPLIER));
         await this.moveAllProductsAlong();
+        this.daysElapsed++;
     }
-
-    public async fastForwardWork(): Promise<void> {
-        for (let i = 0; i < 10; i++) {
-            await this.generateProducts();
-            await new Promise((resolve) => setTimeout(resolve, 300 * ProductionLine.WAIT_MULTIPLIER));
-            await this.moveAllProductsAlong();
-        }
-    }
-
-    public async generateProducts(): Promise<void> {
-        await Promise.all(this.workStations.map(async (workStation: WorkStation) => await workStation.work()));
-    }
-
-    public async moveAllProductsAlong(): Promise<void> {
-        await Promise.all(this.workStations.map(async (workStation: WorkStation, index: number) => {
-            if (index === ProductionLine.STATIONS_COUNT - 1) {
-                return;
-            }
-
-            await this.turnOutputsIntoInputs(index);
-        }));
-    }
-
-    public async turnOutputsIntoInputs(workstationId: number): Promise<void> {
-        const source: WorkStation = this.workStations[workstationId];
-        const destination: WorkStation = this.workStations[workstationId + 1];
-
-        while (source.output > 0) {
-            source.decrementOutput();
-            destination.incrementInput();
-            const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 150);
-            await new Promise((resolve) => setTimeout(resolve, waitTime * ProductionLine.WAIT_MULTIPLIER));
-        }
-    }
-
 
     public moveWorker(from: number, to: number): void {
         assertWorkstationExists(from);
@@ -81,5 +51,31 @@ export class ProductionLine {
                 destination.incrementWorkers();
             }
         });
+    }
+
+    protected async generateProducts(): Promise<void> {
+        await Promise.all(this.workStations.map(async (workStation: WorkStation) => await workStation.work()));
+    }
+
+    protected async moveAllProductsAlong(): Promise<void> {
+        await Promise.all(this.workStations.map(async (workStation: WorkStation, index: number) => {
+            if (index === ProductionLine.STATIONS_COUNT - 1) {
+                return;
+            }
+
+            await this.turnOutputsIntoInputs(index);
+        }));
+    }
+
+    protected async turnOutputsIntoInputs(workstationId: number): Promise<void> {
+        const source: WorkStation = this.workStations[workstationId];
+        const destination: WorkStation = this.workStations[workstationId + 1];
+
+        while (source.output > 0) {
+            source.decrementOutput();
+            destination.incrementInput();
+            const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 150);
+            await new Promise((resolve) => setTimeout(resolve, waitTime * ProductionLine.WAIT_MULTIPLIER));
+        }
     }
 }

@@ -22,6 +22,7 @@ describe('ProductionLine', () => {
         const effortGenerated: number = 1;
         UnfairDice.guaranteedRollValue = effortGenerated;
 
+        // @ts-ignore
         await productionLine.generateProducts();
 
         for (let i = 0; i < productionLine.workStations.length; i++) {
@@ -35,8 +36,7 @@ describe('ProductionLine', () => {
         const startInputs: number[] = productionLine.workStations.map((workStation: WorkStation) => workStation.input);
         UnfairDice.guaranteedRollValue = 1;
 
-        await productionLine.generateProducts();
-        await productionLine.moveAllProductsAlong();
+        await productionLine.work();
 
         // Every station except the last one, should have no output at this point (since the rng will always return 1)
         for (let i = 0; i < productionLine.workStations.length - 1; i++) {
