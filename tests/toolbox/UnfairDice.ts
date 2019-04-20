@@ -1,9 +1,13 @@
-import {IRandomNumberGenerator} from '@/classes/IRandomNumberGenerator';
+import {IRandomNumberGenerator} from '@/interfaces/IRandomNumberGenerator';
 
 export class UnfairDice implements IRandomNumberGenerator {
-    public guaranteedRollValue: number = 3;
+    public static guaranteedRollValue: number = 3;
 
     public roll() {
-        return this.guaranteedRollValue;
+        return UnfairDice.guaranteedRollValue;
+    }
+
+    public get value() {
+        return UnfairDice.guaranteedRollValue;
     }
 }

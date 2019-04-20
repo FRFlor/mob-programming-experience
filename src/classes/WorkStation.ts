@@ -1,5 +1,5 @@
-import {IRandomNumberGenerator} from '@/classes/IRandomNumberGenerator';
-import {Dice} from '@/classes/dice';
+import {IRandomNumberGenerator} from '@/interfaces/IRandomNumberGenerator';
+import {IRngFactory} from '@/interfaces/IRngFactory';
 
 const assertGreaterThanZero = (value: number) => {
     if (value < 0) {
@@ -9,14 +9,15 @@ const assertGreaterThanZero = (value: number) => {
 
 export class WorkStation {
     private workerCount: number = 1;
+    private workersDice: IRandomNumberGenerator[];
     private inputCount: number = 0; // Material to work with
     private effortCount: number = 0; // Amount of work generated
     private outputCount: number = 0; // Total production from last work cycle
+    private rngFactory: IRngFactory;
 
-    private rng: IRandomNumberGenerator; // Used to simulate variance on worker effort
-
-    constructor(rng: IRandomNumberGenerator | null = null) {
-        this.rng = (rng === null) ? new Dice() : rng;
+    constructor(rngFactory: IRngFactory) {
+        this.rngFactory = rngFactory;
+        this.workersDice = this.rngFactory.getRngArray(this.workerCount);
     }
 
     public get numberOfWorkers(): number {
@@ -58,12 +59,14 @@ export class WorkStation {
         this.workerCount = amount;
     }
 
-    public recalculateEffort(): number {
-        this.effortCount = 0;
+    public get workersEffort(): number[] {
+        return this.workersDice.map((dice: IRandomNumberGenerator) => dice.value);
+    }
 
-        for (let i = 0; i < this.workerCount; i++) {
-            this.effortCount += this.rng.roll();
-        }
+    public recalculateEffort(): number {
+        this.workersDice = this.rngFactory.getRngArray(this.workerCount);
+        this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.roll());
+        this.effortCount = this.workersEffort.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
 
         return this.effortCount;
     }

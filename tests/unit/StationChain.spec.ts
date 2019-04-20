@@ -1,15 +1,14 @@
 import {StationChain} from '@/classes/StationChain';
 import {UnfairDice} from '../toolbox/UnfairDice';
+import {UnfairRngFactory} from '../toolbox/UnfairRngFactory';
 import {WorkStation} from '@/classes/WorkStation';
 
 
 describe('StationChain', () => {
     let stationChain: StationChain;
-    let unfairDice: UnfairDice;
 
     beforeEach(() => {
-        unfairDice = new UnfairDice();
-        stationChain = new StationChain(unfairDice);
+        stationChain = new StationChain(new UnfairRngFactory());
     });
 
     it('has infinite input value for the first workstation', () => {
@@ -19,7 +18,7 @@ describe('StationChain', () => {
     it('processes work for all the workstations', () => {
         const startInputs: number[] = stationChain.workStations.map((workStation: WorkStation) => workStation.input);
         const effortGenerated: number = 1;
-        unfairDice.guaranteedRollValue = effortGenerated;
+        UnfairDice.guaranteedRollValue = effortGenerated;
 
         stationChain.work();
 
@@ -32,8 +31,7 @@ describe('StationChain', () => {
 
     it('transfers output from a workstation to the input box of the next one', () => {
         const startInputs: number[] = stationChain.workStations.map((workStation: WorkStation) => workStation.input);
-        const effortGenerated: number = 1;
-        unfairDice.guaranteedRollValue = effortGenerated;
+        UnfairDice.guaranteedRollValue = 1;
 
         stationChain.work();
         stationChain.processOutputs();

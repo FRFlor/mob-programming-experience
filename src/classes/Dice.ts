@@ -1,4 +1,4 @@
-import {IRandomNumberGenerator} from '@/classes/IRandomNumberGenerator';
+import {IRandomNumberGenerator} from '@/interfaces/IRandomNumberGenerator';
 
 export class Dice implements IRandomNumberGenerator {
     private static MIN: number = 1;
@@ -33,6 +33,10 @@ export class Dice implements IRandomNumberGenerator {
 
     private delayRoll(ms: number): void {
         setTimeout(() => this.roll(), ms);
+    }
+
+    public get value(): number {
+        return this.faceValue;
     }
 
     public roll(): number {
