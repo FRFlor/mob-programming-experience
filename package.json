@@ -28,6 +28,7 @@
     "ts-jest": "^23.0.0",
     "typescript": "^3.4.3",
     "vue-context": "^3.4.2",
+    "vue-slider-component": "^3.0.29",
     "vue-template-compiler": "^2.5.21"
   }
 }

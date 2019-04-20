@@ -1,5 +1,13 @@
 <template>
     <div class="station-chain">
+        <vue-slider @mouseenter="scaleSliderHeight=10"
+                    @mouseleave="scaleSliderHeight=2"
+                    :height="`${scaleSliderHeight}px`"
+                    width="1000px"
+                    tooltip-formatter="Scale: {value}%"
+                    tooltip-placement="right"
+                    v-model="scale"></vue-slider>
+
         <div class="grid">
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
                  v-for="(_, i) in stationChain.workStations"
@@ -37,6 +45,7 @@
         protected contextStation: number = 0;
         protected isBusy: boolean = false;
         protected scale: number = 100;
+        protected scaleSliderHeight: number = 2;
         protected stationChain: ProductionLine = new ProductionLine(new DiceFactory);
         protected FlowDirection = FlowDirection;
 
