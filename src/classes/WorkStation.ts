@@ -8,8 +8,8 @@ const assertGreaterThanZero = (value: number) => {
 };
 
 export class WorkStation {
+    public workersDice: IRandomNumberGenerator[];
     private workerCount: number = 1;
-    private workersDice: IRandomNumberGenerator[];
     private inputCount: number = 0; // Material to work with
     private effortCount: number = 0; // Amount of work generated
     private outputCount: number = 0; // Total production from last work cycle
@@ -57,6 +57,15 @@ export class WorkStation {
     public setNumberOfWorkers(amount: number): void {
         assertGreaterThanZero(amount);
         this.workerCount = amount;
+        this.refreshDice();
+    }
+
+    public incrementWorkers(): void {
+        this.setNumberOfWorkers(this.numberOfWorkers + 1);
+    }
+
+    public decrementWorkers(): void {
+        this.setNumberOfWorkers(this.numberOfWorkers - 1);
     }
 
     public get workersEffort(): number[] {
@@ -64,11 +73,15 @@ export class WorkStation {
     }
 
     public recalculateEffort(): number {
-        this.workersDice = this.rngFactory.getRngArray(this.workerCount);
+        this.refreshDice();
         this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.roll());
         this.effortCount = this.workersEffort.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
 
         return this.effortCount;
+    }
+
+    public refreshDice(): void {
+        this.workersDice = this.rngFactory.getRngArray(this.workerCount);
     }
 
     public work(): void {

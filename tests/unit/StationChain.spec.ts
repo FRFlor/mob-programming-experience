@@ -46,4 +46,20 @@ describe('StationChain', () => {
         expect(lastStation.output).toBe(1);
         expect(lastStation.input).toBe(startInputs[stationChain.workStations.length - 1]);
     });
+
+    it('allows workers to move from one station to another', () => {
+        expect(stationChain.workStations[0].numberOfWorkers).toBe(1);
+        expect(stationChain.workStations[1].numberOfWorkers).toBe(1);
+
+        stationChain.moveWorker(0, 1);
+
+        expect(stationChain.workStations[0].numberOfWorkers).toBe(0);
+        expect(stationChain.workStations[1].numberOfWorkers).toBe(2);
+    });
+
+    it('allows all workers to be moved to a target station', () => {
+        expect(stationChain.workStations[0].numberOfWorkers).toBe(1);
+        stationChain.moveAllWorkersTo(0);
+        expect(stationChain.workStations[0].numberOfWorkers).toBe(10);
+    });
 });

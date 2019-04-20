@@ -9,8 +9,8 @@
         <div class="station-header">
             <div class="input">
                 <h2>Input</h2>
-                <div class="value" v-if="input === Infinity">∞</div>
-                <div class="value" v-else>{{input}}</div>
+                <div class="value" v-if="workstationClass.input === Infinity">∞</div>
+                <div class="value" v-else>{{workstationClass.input}}</div>
             </div>
 
             <div class="station-title">
@@ -19,14 +19,16 @@
                     <img class="computer-image"
                          src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg"
                          alt="Computer">
-                    <div class="effort-badge" v-text="remainingEffort" v-show="totalEffortProduced > 0">
+                    <div class="effort-badge"
+                         v-text="workstationClass.effortRemaining"
+                         v-show="workstationClass.effortRemaining > 0">
                     </div>
                 </div>
             </div>
 
             <div class="output">
                 <h2>Output</h2>
-                <div class="value">{{output}}</div>
+                <div class="value">{{workstationClass.output}}</div>
             </div>
         </div>
 
@@ -40,20 +42,20 @@
                   :image="require('../assets/mini-man.png')">
                 <div class="workers">
                     <div class="worker-avatar">
-                        <img v-if="numberOfWorkers === 1"
+                        <img v-if="workstationClass.numberOfWorkers === 1"
                              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
                              alt="single worker">
-                        <img v-else-if="numberOfWorkers > 1"
+                        <img v-else-if="workstationClass.numberOfWorkers > 1"
                              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
                              alt="multiple workers">
-                        <div class="count-badge" v-if="numberOfWorkers > 1" v-text="numberOfWorkers"></div>
+                        <div class="count-badge"
+                             v-if="workstationClass.numberOfWorkers > 1"
+                             v-text="workstationClass.numberOfWorkers"></div>
                     </div>
                     <div class="dice-container">
                         <dice-roll class="dice"
-                                   v-for="(_, index) in numberOfWorkers"
-                                   :ref="`station-${id}-dice-${index}`"
-                                   v-model="diceValues[index]"
-                                   @animated-roll-finished="onRollFinished"
+                                   v-for="(dice, index) in workstationClass.workersDice"
+                                   :dice="dice"
                                    :key="index"/>
                     </div>
                 </div>
@@ -63,71 +65,16 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
     import DiceRoll from '@/components/DiceRoll.vue';
+    import {WorkStation as WorkStationClass} from '@/classes/WorkStation';
 
     @Component({components: {DiceRoll}})
     export default class WorkStation extends Vue {
         @Prop() protected id!: number;
-        @Prop() protected numberOfWorkers!: number;
-        @Prop({default: 0}) protected input!: number;
-        @Prop({default: 0}) protected output!: number;
-
-
-        protected diceValues: number[] = [];
+        @Prop() protected workstationClass!: WorkStationClass;
 
         protected isDraggingOver: boolean = false;
-        protected isProcessingEffort: boolean = false;
-        protected remainingEffort: number = 0;
-
-        protected onRollFinished(): void {
-            if (this.isProcessingEffort) {
-                return;
-            }
-
-            this.isProcessingEffort = true;
-            setTimeout(() => {
-                this.remainingEffort = this.totalEffortProduced;
-                this.processEffort();
-            }, 350);
-        }
-
-        protected processEffort(): void {
-            if (this.remainingEffort === 0 || this.input === 0) {
-                this.isProcessingEffort = false;
-                return;
-            }
-
-            // Linear wait time calculation:
-            //  - 500ms if remaining effort is 3 or less
-            //  - 50ms at the fastest (if remaining effort is a large value)
-            const referenceTime: number = Math.min(this.remainingEffort, this.input);
-            const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 500);
-
-            this.remainingEffort--;
-            this.$emit('decrement-input');
-            this.$emit('increment-output');
-            setTimeout(() => {
-                this.processEffort();
-            }, waitTime);
-        }
-
-        @Watch('totalEffortProduced')
-        protected updateEffort(): void {
-            this.remainingEffort = this.totalEffortProduced;
-        }
-
-        protected get totalEffortProduced(): number {
-            return this.diceValues.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
-        }
-
-        protected rollDice(): void {
-            if (this.getDice().length === 0) {
-                return;
-            }
-
-            this.getDice().forEach((die: any) => die.roll());
-        }
 
         protected handleDrop(payload: any): void {
             this.isDraggingOver = false;
@@ -139,15 +86,6 @@
                 sourceId: payload.sourceId,
                 destinationId: this.id,
             });
-        }
-
-        private getDice(): any[] {
-            return Object.values(this.$refs).map((wrapper: any) => wrapper[0]).filter((_) => _);
-        }
-
-        @Watch('numberOfWorkers')
-        private resetDiceValues() {
-            this.diceValues = [];
         }
     }
 </script>
