@@ -1,12 +1,10 @@
 <template>
     <div class="station-chain">
-        <vue-slider @mouseenter="scaleSliderHeight=10"
-                    @mouseleave="scaleSliderHeight=2"
-                    :height="`${scaleSliderHeight}px`"
+        <vue-slider height="2px"
                     width="1000px"
                     tooltip-formatter="Scale: {value}%"
                     tooltip-placement="right"
-                    v-model="scale"></vue-slider>
+                    v-model="scale"/>
 
         <div class="grid">
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
@@ -19,6 +17,20 @@
             </div>
 
             <div class="control-center" :style="{'grid-area': `controls`}">
+                <div class="animation-duration-slider">
+                    <label for="animation_duration_slider">Animation Duration</label>
+                    <vue-slider direction="btt"
+                                id="animation_duration_slider"
+                                height="80px"
+                                width="10px"
+                                max="2"
+                                interval="0.1"
+                                min="0"
+                                tooltip-formatter="Animation Duration: x{value}"
+                                tooltip-placement="right"
+                                v-model="animationMultiplier"/>
+                </div>
+
                 <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
                 <button @click="fastForwardCycles" :disabled="isBusy">Work 10 days!</button>
             </div>
@@ -39,15 +51,23 @@
     import {VueContext} from 'vue-context';
     import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
+    import {Dice} from '@/classes/Dice';
+    import {WorkStation} from '@/classes/WorkStation';
 
     @Component({components: {WorkstationView, VueContext}})
     export default class ProductionLineView extends Vue {
         protected contextStation: number = 0;
         protected isBusy: boolean = false;
         protected scale: number = 100;
-        protected scaleSliderHeight: number = 2;
+        protected animationMultiplier: number = 1;
         protected stationChain: ProductionLine = new ProductionLine(new DiceFactory);
-        protected FlowDirection = FlowDirection;
+
+        @Watch('animationMultiplier')
+        protected onAnimationMultiplierChanged(): void {
+            ProductionLine.WAIT_MULTIPLIER = this.animationMultiplier;
+            WorkStation.WAIT_MULTIPLIER = this.animationMultiplier;
+            Dice.WAIT_MULTIPLIER = this.animationMultiplier;
+        }
 
         @Watch('scale')
         protected onScaleChanged(): void {
@@ -95,6 +115,22 @@
 </script>
 
 <style lang="scss" scoped>
+    .animation-duration-slider {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        background-color: hsl(203, 60%, 85%);
+        border: hsl(203, 40%, 30%) solid 1px;
+        height: 8rem;
+        padding-bottom: 0.5rem;
+        label {
+            font-size: 0.75rem;
+            width: 5rem;
+            text-align: center;
+        }
+    }
+
     .grid {
         display: grid;
         grid-template-columns: repeat(5, 200px);
