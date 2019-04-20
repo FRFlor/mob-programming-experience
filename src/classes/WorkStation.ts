@@ -123,6 +123,7 @@ export class WorkStation {
     public async work(): Promise<void> {
         this.workDone = 0;
         await this.recalculateEffort();
+        await new Promise((resolve) => setTimeout(resolve, 750 * WorkStation.WAIT_MULTIPLIER));
         while (this.inputCount > 0 && this.effortRemaining > 0) {
             this.inputCount--;
             this.workDone++;
@@ -132,7 +133,7 @@ export class WorkStation {
             //  - 500ms if remaining effort is 3 or less
             //  - 50ms at the fastest (if remaining effort is a large value)
             const referenceTime: number = Math.min(this.effortRemaining, this.input);
-            const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 300);
+            const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 250);
             await new Promise((resolve) => setTimeout(resolve, waitTime * WorkStation.WAIT_MULTIPLIER));
         }
     }
