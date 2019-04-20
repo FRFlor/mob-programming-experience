@@ -22,27 +22,29 @@ export class Dice implements IRandomNumberGenerator {
         return this.faceValue;
     }
 
-    public animatedRoll(): void {
+    public async animatedRoll(): Promise<number> {
         this.isRolling = true;
-        let delayMs: number = 100;
         this.roll();
+
         for (let i = 0; i < 5; i++) {
-            this.delayRoll(delayMs);
-            delayMs += 100;
-        }
-        for (let i = 0; i < 5; i++) {
-            this.delayRoll(delayMs);
-            delayMs += 200;
-        }
-        for (let i = 0; i < 4; i++) {
-            this.delayRoll(delayMs);
-            delayMs += 400;
+            await this.delayRoll(100);
         }
 
-        setTimeout(() => this.isRolling = false, delayMs);
+        for (let i = 0; i < 5; i++) {
+            await this.delayRoll(200);
+        }
+
+        for (let i = 0; i < 2; i++) {
+            await this.delayRoll(400);
+        }
+
+        this.isRolling = false;
+
+        return this.value;
     }
 
-    private delayRoll(ms: number): void {
-        setTimeout(() => this.roll(), ms);
+    private async delayRoll(ms: number): Promise<void> {
+        await new Promise((resolve) => setTimeout(resolve, ms));
+        this.roll();
     }
 }

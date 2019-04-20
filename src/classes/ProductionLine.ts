@@ -22,6 +22,10 @@ export class ProductionLine {
         this.workStations.forEach((workStation: WorkStation) => workStation.work());
     }
 
+    public animatedWork(): void {
+        this.workStations.forEach((workStation: WorkStation) => workStation.animatedWork());
+    }
+
     public processOutputs(): void {
         for (let i = 0; i < this.workStations.length - 1; i++) {
             while (this.workStations[i].output > 0) {

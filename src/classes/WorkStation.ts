@@ -11,7 +11,7 @@ export class WorkStation {
     public workersDice: IRandomNumberGenerator[];
     private workerCount: number = 1;
     private inputCount: number = 0; // Material to work with
-    private effortCount: number = 0; // Amount of work generated
+    private workDone: number = 0;
     private outputCount: number = 0; // Total production from last work cycle
     private rngFactory: IRngFactory;
 
@@ -26,10 +26,6 @@ export class WorkStation {
 
     public get input(): number {
         return this.inputCount;
-    }
-
-    public get effortRemaining(): number {
-        return this.effortCount;
     }
 
     public get output(): number {
@@ -75,7 +71,18 @@ export class WorkStation {
     public recalculateEffort(): number {
         this.refreshDice();
         this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.roll());
-        this.effortCount = this.workersEffort.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
+
+        return this.effortCount;
+    }
+
+    public async animatedRecalculateEffort(): Promise<number> {
+        this.refreshDice();
+
+        for (let i = 0; i < this.numberOfWorkers - 1; i++) {
+            this.workersDice[i].animatedRoll();
+        }
+        await this.workersDice[this.numberOfWorkers - 1].animatedRoll();
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         return this.effortCount;
     }
@@ -84,12 +91,34 @@ export class WorkStation {
         this.workersDice = this.rngFactory.getRngArray(this.workerCount);
     }
 
+    public diceAreRolling(): boolean {
+        return this.workersDice.find((dice: IRandomNumberGenerator) => !dice.isRolling) === undefined;
+    }
+
+    public get effortCount(): number {
+        return this.workersEffort.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
+    }
+
+    public get effortRemaining(): number {
+        return this.effortCount - this.workDone;
+    }
+
     public work(): void {
         this.recalculateEffort();
 
-        while (this.inputCount > 0 && this.effortCount > 0) {
+        while (this.inputCount > 0 && this.effortRemaining > 0) {
             this.inputCount--;
-            this.effortCount--;
+            this.workDone++;
+            this.outputCount++;
+        }
+    }
+
+    public async animatedWork() {
+        this.workDone = 0;
+        await this.animatedRecalculateEffort();
+        while (this.inputCount > 0 && this.effortRemaining > 0) {
+            this.inputCount--;
+            this.workDone++;
             this.outputCount++;
         }
     }

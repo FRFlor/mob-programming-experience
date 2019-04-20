@@ -10,7 +10,7 @@
             </div>
 
             <div class="empty-cell">
-                <button @click="stationChain.work()">Work!</button>
+                <button @click="stationChain.animatedWork()">Work!</button>
             </div>
             <div class="empty-cell"></div>
             <div class="empty-cell"></div>
