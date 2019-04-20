@@ -77,12 +77,7 @@ export class WorkStation {
 
     public async animatedRecalculateEffort(): Promise<number> {
         this.refreshDice();
-
-        for (let i = 0; i < this.numberOfWorkers - 1; i++) {
-            this.workersDice[i].animatedRoll();
-        }
-        await this.workersDice[this.numberOfWorkers - 1].animatedRoll();
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await Promise.all(this.workersDice.map(async (dice: IRandomNumberGenerator) => await dice.animatedRoll()));
 
         return this.effortCount;
     }
@@ -113,13 +108,20 @@ export class WorkStation {
         }
     }
 
-    public async animatedWork() {
+    public async animatedWork(): Promise<void> {
         this.workDone = 0;
         await this.animatedRecalculateEffort();
         while (this.inputCount > 0 && this.effortRemaining > 0) {
             this.inputCount--;
             this.workDone++;
             this.outputCount++;
+
+            // Linear wait time calculation:
+            //  - 500ms if remaining effort is 3 or less
+            //  - 50ms at the fastest (if remaining effort is a large value)
+            const referenceTime: number = Math.min(this.effortRemaining, this.input);
+            const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 500);
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
         }
     }
 }

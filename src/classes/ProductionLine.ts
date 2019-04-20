@@ -22,11 +22,18 @@ export class ProductionLine {
         this.workStations.forEach((workStation: WorkStation) => workStation.work());
     }
 
-    public animatedWork(): void {
-        this.workStations.forEach((workStation: WorkStation) => workStation.animatedWork());
+    public async animatedWork(): Promise<void> {
+        await Promise.all(this.workStations.map(async (workStation: WorkStation) => await workStation.animatedWork()));
+        await Promise.all(this.workStations.map(async (workStation: WorkStation, index: number) => {
+            if (index === ProductionLine.STATIONS_COUNT - 1) {
+                return;
+            }
+
+            await this.animatedProcessOutputs(index);
+        }));
     }
 
-    public processOutputs(): void {
+    public processOutputs(workstationId: number): void {
         for (let i = 0; i < this.workStations.length - 1; i++) {
             while (this.workStations[i].output > 0) {
                 this.workStations[i].decrementOutput();
@@ -34,6 +41,19 @@ export class ProductionLine {
             }
         }
     }
+
+    public async animatedProcessOutputs(workstationId: number): Promise<void> {
+        const source: WorkStation = this.workStations[workstationId];
+        const destination: WorkStation = this.workStations[workstationId + 1];
+
+        while (source.output > 0) {
+            source.decrementOutput();
+            destination.incrementInput();
+            const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 500);
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
+        }
+    }
+
 
     public moveWorker(from: number, to: number): void {
         assertWorkstationExists(from);
