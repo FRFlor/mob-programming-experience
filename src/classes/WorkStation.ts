@@ -1,6 +1,12 @@
 import {IRandomNumberGenerator} from '@/classes/IRandomNumberGenerator';
 import {Dice} from '@/classes/dice';
 
+const assertGreaterThanZero = (value: number) => {
+    if (value < 0) {
+        throw new DOMException('Cannot be lower than 0');
+    }
+};
+
 export class WorkStation {
     private workerCount: number = 1;
     private inputCount: number = 0; // Material to work with
@@ -29,18 +35,26 @@ export class WorkStation {
         return this.outputCount;
     }
 
+    public setOutput(amount: number): void {
+        assertGreaterThanZero(amount);
+        this.outputCount = amount;
+    }
+
+    public decrementOutput(): void {
+        this.setOutput(this.outputCount - 1);
+    }
+
     public setInput(amount: number): void {
-        if (amount < 0) {
-            throw new DOMException('InputCount cannot be lower than 0');
-        }
+        assertGreaterThanZero(amount);
         this.inputCount = amount;
     }
 
-    public setNumberOfWorkers(amount: number): void {
-        if (amount < 0) {
-            throw new DOMException('WorkerCount cannot be lower than 0');
-        }
+    public incrementInput(): void {
+        this.setInput(this.inputCount + 1);
+    }
 
+    public setNumberOfWorkers(amount: number): void {
+        assertGreaterThanZero(amount);
         this.workerCount = amount;
     }
 
