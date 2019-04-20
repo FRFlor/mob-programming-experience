@@ -92,6 +92,34 @@ export class WorkStation {
         return this.effortCount - this.workDone;
     }
 
+    public get isOkay(): boolean {
+        if (this.input === Infinity) {
+            return true;
+        }
+
+        return this.input <= this.averageWorkerEffort * this.numberOfWorkers;
+    }
+
+    public get isUnderStaffed(): boolean {
+        if (this.isOkay) {
+            return false;
+        }
+
+        return this.input <= this.maxWorkerEffort * this.numberOfWorkers;
+    }
+
+    public get isHeavilyUnderstaffed(): boolean {
+        return !this.isOkay && !this.isUnderStaffed;
+    }
+
+    public get averageWorkerEffort(): number {
+        return this.rngFactory.getRngArray(1)[0].average;
+    }
+
+    public get maxWorkerEffort(): number {
+        return this.rngFactory.getRngArray(1)[0].max;
+    }
+
     public async work(): Promise<void> {
         this.workDone = 0;
         await this.recalculateEffort();

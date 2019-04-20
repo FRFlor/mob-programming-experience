@@ -3,4 +3,6 @@ export interface IRandomNumberGenerator {
     animatedRoll: () => Promise<number>;
     value: number;
     isRolling: boolean;
+    average: number;
+    max: number;
 }

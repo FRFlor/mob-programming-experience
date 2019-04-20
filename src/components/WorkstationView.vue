@@ -7,7 +7,7 @@
              aria-hidden="true"
              alt="pre-loading of the drag-icon">
         <div class="station-header">
-            <div class="input">
+            <div class="input" :style="inputColour">
                 <h2>Input</h2>
                 <div class="value" v-if="workstation.input === Infinity">∞</div>
                 <div class="value" v-else>{{workstation.input}}</div>
@@ -107,6 +107,18 @@
             }[this.flowDirection];
 
             return `background-image: url('${BASE_URL}/a_${ANGLE}/v1555784793/down-arrow.png')`;
+        }
+
+        protected get inputColour(): string {
+            if (this.workstation.isHeavilyUnderstaffed) {
+                return `background-color: hsl(15, 100%, 66%);`;
+            }
+
+            if (this.workstation.isUnderStaffed) {
+                return `background-color: hsl(39, 100%, 85%)`;
+            }
+
+            return `background-color: hsl(123, 100%, 85%)`;
         }
     }
 </script>
@@ -236,9 +248,13 @@
             }
         }
 
+        .output {
+            background-color: hsl(240, 34%, 33%);
+            color: hsl(0, 0%, 96%);
+        }
+
         .input, .output {
             text-align: center;
-            background-color: hsl(39, 100%, 85%);
             display: flex;
             flex-direction: column;
             justify-content: space-between;

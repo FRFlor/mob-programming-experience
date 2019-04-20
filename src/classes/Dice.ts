@@ -9,6 +9,14 @@ export class Dice implements IRandomNumberGenerator {
     public isRolling: boolean = false;
     private faceValue: number = 1;
 
+    public get average(): number {
+        return (Dice.MIN + Dice.MAX) / 2;
+    }
+
+    public get max(): number {
+        return Dice.MAX;
+    }
+
     public get value(): number {
         return this.faceValue;
     }
