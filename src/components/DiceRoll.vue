@@ -11,10 +11,7 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
-
-    const randomBetween = (min: number, max: number) =>  Math.floor(Math.random() * (max - min + 1) ) + min;
-    const MAX: number = 6;
-    const MIN: number = 1;
+    import {Dice} from '@/classes/Dice';
 
     @Component({
         model: {
@@ -26,6 +23,7 @@
         @Prop({default: 1}) protected rollValue!: number;
 
         protected isRolling: boolean = false;
+        protected dice: Dice = new Dice();
 
         public roll(): void {
             this.isRolling = true;
@@ -55,13 +53,7 @@
         }
 
         private instantRoll(): void {
-            const previous: number = this.rollValue;
-            let newValue: number = previous;
-
-            do {
-                newValue = randomBetween(MIN, MAX);
-            } while (newValue === previous);
-            this.$emit('instant-roll', newValue);
+            this.$emit('instant-roll', this.dice.roll());
         }
     }
 </script>
