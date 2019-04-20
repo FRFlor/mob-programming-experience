@@ -1,4 +1,6 @@
-export default class Dice {
+import {IRandomNumberGenerator} from '@/classes/IRandomNumberGenerator';
+
+export class Dice implements IRandomNumberGenerator {
     private static MIN: number = 1;
     private static MAX: number = 6;
     private static randomBetween(min: number, max: number): number {

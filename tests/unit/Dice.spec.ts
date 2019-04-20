@@ -1,4 +1,4 @@
-import Dice from '@/classes/Dice';
+import {Dice} from '@/classes/Dice';
 
 const TEST_LOOP_COUNT: number = 100;
 const D6_MIN_VALUE: number = 1;
