@@ -1,5 +1,6 @@
 import {WorkStation} from '@/classes/WorkStation';
 import {IRngFactory} from '@/interfaces/IRngFactory';
+import {Dice} from '@/classes/Dice';
 
 const assertWorkstationExists = (id: number) => {
     if (id < 0 || id >= ProductionLine.STATIONS_COUNT) {
@@ -23,6 +24,20 @@ export class ProductionLine {
         await this.generateProducts();
         await new Promise((resolve) => setTimeout(resolve, 300 * ProductionLine.WAIT_MULTIPLIER));
         await this.moveAllProductsAlong();
+    }
+
+    public async fastForwardWork(): Promise<void> {
+        ProductionLine.WAIT_MULTIPLIER = 0.1;
+        WorkStation.WAIT_MULTIPLIER = 0.1;
+        Dice.WAIT_MULTIPLIER = 0.1;
+        for (let i = 0; i < 10; i++) {
+            await this.generateProducts();
+            await new Promise((resolve) => setTimeout(resolve, 300 * ProductionLine.WAIT_MULTIPLIER));
+            await this.moveAllProductsAlong();
+        }
+        ProductionLine.WAIT_MULTIPLIER = 1;
+        WorkStation.WAIT_MULTIPLIER = 1;
+        Dice.WAIT_MULTIPLIER = 1;
     }
 
     public async generateProducts(): Promise<void> {

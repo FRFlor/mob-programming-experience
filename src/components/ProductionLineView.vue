@@ -20,7 +20,9 @@
             <div class="empty-cell">
                 <button @click="stationChain.work()">Work!</button>
             </div>
-            <div class="empty-cell"></div>
+            <div class="empty-cell">
+                <button @click="stationChain.fastForwardWork(10)">Work 10 days!</button>
+            </div>
 
 
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, 4)">
