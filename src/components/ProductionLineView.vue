@@ -11,10 +11,8 @@
             </div>
 
             <div class="control-center" :style="{'grid-area': `controls`}">
-                <button @click="stationChain.generateProducts()">Generate Products!</button>
-                <button @click="stationChain.moveAllProductsAlong()">Move Products!</button>
-                <button @click="stationChain.work()">Work!</button>
-                <button @click="stationChain.fastForwardWork(10)">Work 10 days!</button>
+                <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
+                <button @click="fastForwardCycles" :disabled="isBusy">Work 10 days!</button>
             </div>
         </div>
 
@@ -37,13 +35,26 @@
     @Component({components: {WorkstationView, VueContext}})
     export default class ProductionLineView extends Vue {
         protected contextStation: number = 0;
+        protected isBusy: boolean = false;
         protected scale: number = 100;
-        protected stationChain: ProductionLine = new ProductionLine(new DiceFactory());
+        protected stationChain: ProductionLine = new ProductionLine(new DiceFactory);
         protected FlowDirection = FlowDirection;
 
         @Watch('scale')
         protected onScaleChanged(): void {
             document.documentElement.style.setProperty('--scale', `${this.scale / 100}`);
+        }
+
+        protected async doSingleWorkCycle(): Promise<void> {
+            this.isBusy = true;
+            await this.stationChain.work();
+            this.isBusy = false;
+        }
+
+        protected async fastForwardCycles(): Promise<void> {
+            this.isBusy = true;
+            await this.stationChain.fastForwardWork();
+            this.isBusy = false;
         }
 
         protected getFlowDirectionOfStation(stationId: number): FlowDirection {
