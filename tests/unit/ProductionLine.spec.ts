@@ -9,18 +9,20 @@ describe('ProductionLine', () => {
 
     beforeEach(() => {
         productionLine = new ProductionLine(new UnfairRngFactory());
+        ProductionLine.WAIT_MULTIPLIER = 0;
+        WorkStation.WAIT_MULTIPLIER = 0;
     });
 
     it('has infinite input value for the first workstation', () => {
         expect(productionLine.workStations[0].input).toBe(Infinity);
     });
 
-    it('processes work for all the workstations', () => {
+    it('processes work for all the workstations', async () => {
         const startInputs: number[] = productionLine.workStations.map((workStation: WorkStation) => workStation.input);
         const effortGenerated: number = 1;
         UnfairDice.guaranteedRollValue = effortGenerated;
 
-        productionLine.work();
+        await productionLine.generateProducts();
 
         for (let i = 0; i < productionLine.workStations.length; i++) {
             expect(productionLine.workStations[i].input).toBe(startInputs[i] - effortGenerated);
@@ -29,12 +31,12 @@ describe('ProductionLine', () => {
         }
     });
 
-    it('transfers output from a workstation to the input box of the next one', () => {
+    it('transfers output from a workstation to the input box of the next one', async () => {
         const startInputs: number[] = productionLine.workStations.map((workStation: WorkStation) => workStation.input);
         UnfairDice.guaranteedRollValue = 1;
 
-        productionLine.work();
-        productionLine.processOutputs();
+        await productionLine.generateProducts();
+        await productionLine.moveAllProductsAlong();
 
         // Every station except the last one, should have no output at this point (since the rng will always return 1)
         for (let i = 0; i < productionLine.workStations.length - 1; i++) {

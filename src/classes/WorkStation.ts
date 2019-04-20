@@ -8,6 +8,7 @@ const assertGreaterThanZero = (value: number) => {
 };
 
 export class WorkStation {
+    public static WAIT_MULTIPLIER: number = 1;
     public workersDice: IRandomNumberGenerator[];
     private workerCount: number = 1;
     private inputCount: number = 0; // Material to work with
@@ -68,14 +69,7 @@ export class WorkStation {
         return this.workersDice.map((dice: IRandomNumberGenerator) => dice.value);
     }
 
-    public recalculateEffort(): number {
-        this.refreshDice();
-        this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.roll());
-
-        return this.effortCount;
-    }
-
-    public async animatedRecalculateEffort(): Promise<number> {
+    public async recalculateEffort(): Promise<number> {
         this.refreshDice();
         await Promise.all(this.workersDice.map(async (dice: IRandomNumberGenerator) => await dice.animatedRoll()));
 
@@ -98,19 +92,9 @@ export class WorkStation {
         return this.effortCount - this.workDone;
     }
 
-    public work(): void {
-        this.recalculateEffort();
-
-        while (this.inputCount > 0 && this.effortRemaining > 0) {
-            this.inputCount--;
-            this.workDone++;
-            this.outputCount++;
-        }
-    }
-
-    public async animatedWork(): Promise<void> {
+    public async work(): Promise<void> {
         this.workDone = 0;
-        await this.animatedRecalculateEffort();
+        await this.recalculateEffort();
         while (this.inputCount > 0 && this.effortRemaining > 0) {
             this.inputCount--;
             this.workDone++;
@@ -121,7 +105,7 @@ export class WorkStation {
             //  - 50ms at the fastest (if remaining effort is a large value)
             const referenceTime: number = Math.min(this.effortRemaining, this.input);
             const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 500);
-            await new Promise((resolve) => setTimeout(resolve, waitTime));
+            await new Promise((resolve) => setTimeout(resolve, waitTime * WorkStation.WAIT_MULTIPLIER));
         }
     }
 }

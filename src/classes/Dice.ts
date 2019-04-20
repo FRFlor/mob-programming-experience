@@ -3,6 +3,7 @@ import {IRandomNumberGenerator} from '@/interfaces/IRandomNumberGenerator';
 const randomBetween = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 export class Dice implements IRandomNumberGenerator {
+    public static WAIT_MULTIPLIER: number = 1;
     private static MIN: number = 1;
     private static MAX: number = 6;
     public isRolling: boolean = false;
@@ -26,6 +27,11 @@ export class Dice implements IRandomNumberGenerator {
         this.isRolling = true;
         this.roll();
 
+        if (Dice.WAIT_MULTIPLIER === 0) {
+            this.isRolling = false;
+            return this.value;
+        }
+
         for (let i = 0; i < 5; i++) {
             await this.delayRoll(100);
         }
@@ -44,7 +50,7 @@ export class Dice implements IRandomNumberGenerator {
     }
 
     private async delayRoll(ms: number): Promise<void> {
-        await new Promise((resolve) => setTimeout(resolve, ms));
+        await new Promise((resolve) => setTimeout(resolve, ms * Dice.WAIT_MULTIPLIER));
         this.roll();
     }
 }

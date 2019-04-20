@@ -8,6 +8,7 @@ const assertWorkstationExists = (id: number) => {
 };
 
 export class ProductionLine {
+    public static WAIT_MULTIPLIER: number = 1;
     public static STARTING_INPUT: number = 3;
     public static STATIONS_COUNT: number = 10;
     public workStations: WorkStation[];
@@ -18,31 +19,26 @@ export class ProductionLine {
         this.workStations[0].setInput(Infinity);
     }
 
-    public work(): void {
-        this.workStations.forEach((workStation: WorkStation) => workStation.work());
+    public async work(): Promise<void> {
+        await this.generateProducts();
+        await this.moveAllProductsAlong();
     }
 
-    public async animatedWork(): Promise<void> {
-        await Promise.all(this.workStations.map(async (workStation: WorkStation) => await workStation.animatedWork()));
+    public async generateProducts(): Promise<void> {
+        await Promise.all(this.workStations.map(async (workStation: WorkStation) => await workStation.work()));
+    }
+
+    public async moveAllProductsAlong(): Promise<void> {
         await Promise.all(this.workStations.map(async (workStation: WorkStation, index: number) => {
             if (index === ProductionLine.STATIONS_COUNT - 1) {
                 return;
             }
 
-            await this.animatedProcessOutputs(index);
+            await this.turnOutputsIntoInputs(index);
         }));
     }
 
-    public processOutputs(workstationId: number): void {
-        for (let i = 0; i < this.workStations.length - 1; i++) {
-            while (this.workStations[i].output > 0) {
-                this.workStations[i].decrementOutput();
-                this.workStations[i + 1].incrementInput();
-            }
-        }
-    }
-
-    public async animatedProcessOutputs(workstationId: number): Promise<void> {
+    public async turnOutputsIntoInputs(workstationId: number): Promise<void> {
         const source: WorkStation = this.workStations[workstationId];
         const destination: WorkStation = this.workStations[workstationId + 1];
 
@@ -50,7 +46,7 @@ export class ProductionLine {
             source.decrementOutput();
             destination.incrementInput();
             const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 500);
-            await new Promise((resolve) => setTimeout(resolve, waitTime));
+            await new Promise((resolve) => setTimeout(resolve, waitTime * ProductionLine.WAIT_MULTIPLIER));
         }
     }
 
