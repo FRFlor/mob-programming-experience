@@ -185,12 +185,12 @@
 
                 .effort-badge {
                     position: absolute;
-                    height: 14px;
-                    width: 22px;
+                    height: 15px;
+                    width: 24px;
                     background-color: rgba(51, 51, 204, 0.77);
                     color: hsl(0, 0%, 80%);
                     bottom: 14.1px;
-                    right: 39.3px;
+                    right: 38.3px;
                     font-size: 0.85rem;
                     display: flex;
                     justify-content: center;
