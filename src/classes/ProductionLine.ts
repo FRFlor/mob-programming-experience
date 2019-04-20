@@ -2,19 +2,19 @@ import {WorkStation} from '@/classes/WorkStation';
 import {IRngFactory} from '@/interfaces/IRngFactory';
 
 const assertWorkstationExists = (id: number) => {
-    if (id < 0 || id >= StationChain.STATIONS_COUNT) {
+    if (id < 0 || id >= ProductionLine.STATIONS_COUNT) {
         throw new DOMException(`Non-existing workstation of #${id}`);
     }
 };
 
-export class StationChain {
+export class ProductionLine {
     public static STARTING_INPUT: number = 3;
     public static STATIONS_COUNT: number = 10;
     public workStations: WorkStation[];
 
     constructor(rngFactory: IRngFactory) {
-        this.workStations = Array.from({length: StationChain.STATIONS_COUNT}, () => new WorkStation(rngFactory));
-        this.workStations.forEach((workStation: WorkStation) => workStation.setInput(StationChain.STARTING_INPUT));
+        this.workStations = Array.from({length: ProductionLine.STATIONS_COUNT}, () => new WorkStation(rngFactory));
+        this.workStations.forEach((workStation: WorkStation) => workStation.setInput(ProductionLine.STARTING_INPUT));
         this.workStations[0].setInput(Infinity);
     }
 

@@ -1,14 +1,14 @@
-import {StationChain} from '@/classes/StationChain';
+import {ProductionLine} from '@/classes/ProductionLine';
 import {UnfairDice} from '../toolbox/UnfairDice';
 import {UnfairRngFactory} from '../toolbox/UnfairRngFactory';
 import {WorkStation} from '@/classes/WorkStation';
 
 
 describe('StationChain', () => {
-    let stationChain: StationChain;
+    let stationChain: ProductionLine;
 
     beforeEach(() => {
-        stationChain = new StationChain(new UnfairRngFactory());
+        stationChain = new ProductionLine(new UnfairRngFactory());
     });
 
     it('has infinite input value for the first workstation', () => {

@@ -1,11 +1,12 @@
 <template>
-    <div class="grid-handler">
-        <div v-if="ready" class="grid">
+    <div class="station-chain">
+        <div class="grid">
             <!-- Top Stations -->
-            <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)" v-for="i in [0, 1, 2, 3]">
-                <work-station :id="i"
-                              @drag-drop="onDragDrop"
-                              :workstation-class="stationChain.workStations[i]"/>
+            <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
+                 v-for="i in [0, 1, 2, 3]">
+                <workstation-view :id="i"
+                                  @drag-drop="onDragDrop"
+                                  :workstation="stationChain.workStations[i]"/>
             </div>
 
             <div class="empty-cell">
@@ -16,25 +17,26 @@
 
 
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, 4)">
-                <work-station :id="4"
-                              @drag-drop="onDragDrop"
-                              :workstation-class="stationChain.workStations[4]"/>
+                <workstation-view :id="4"
+                                  @drag-drop="onDragDrop"
+                                  :workstation="stationChain.workStations[4]"/>
             </div>
 
             <div class="empty-cell"></div>
             <div class="empty-cell"></div>
             <div class="empty-cell"></div>
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, 5)">
-                <work-station :id="5"
-                              @drag-drop="onDragDrop"
-                              :workstation-class="stationChain.workStations[5]"/>
+                <workstation-view :id="5"
+                                  @drag-drop="onDragDrop"
+                                  :workstation="stationChain.workStations[5]"/>
             </div>
 
             <!-- Bottom Stations -->
-            <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)" v-for="i in [9, 8, 7, 6]">
-                <work-station :id="i"
-                              @drag-drop="onDragDrop"
-                              :workstation-class="stationChain.workStations[i]"/>
+            <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
+                 v-for="i in [9, 8, 7, 6]">
+                <workstation-view :id="i"
+                                  @drag-drop="onDragDrop"
+                                  :workstation="stationChain.workStations[i]"/>
             </div>
         </div>
 
@@ -49,19 +51,17 @@
 
 <script lang="ts">
     import {Component, Vue, Watch} from 'vue-property-decorator';
-    import WorkStation from '@/components/WorkStation.vue';
-    import { VueContext } from 'vue-context';
-    import {StationChain} from '@/classes/StationChain';
-    import {WorkStation as WorkStationClass} from '@/classes/WorkStation';
+    import WorkstationView from '@/components/WorkstationView.vue';
+    import {VueContext} from 'vue-context';
+    import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
 
-    @Component({components: {WorkStation, VueContext}})
-    export default class GridHandler extends Vue {
+    @Component({components: {WorkstationView, VueContext}})
+    export default class ProductionLineView extends Vue {
         protected columns: number = 4;
         protected contextStation: number = 0;
         protected scale: number = 100;
-        protected stationChain: StationChain = new StationChain(new DiceFactory());
-        protected ready = true;
+        protected stationChain: ProductionLine = new ProductionLine(new DiceFactory());
 
         protected created(): void {
             document.documentElement.style.setProperty('--column-count', `${this.columns}`);

@@ -1,24 +1,19 @@
 <template>
     <div id="app">
-        <grid-handler/>
+        <production-line-view/>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import GridHandler from '@/components/GridHandler.vue';
+import ProductionLineView from '@/components/ProductionLineView.vue';
 
 @Component({
   components: {
-      GridHandler,
+      ProductionLineView,
   },
 })
 export default class App extends Vue {
-    protected draggable: string = 'hey';
-
-    protected handleDrop(data: any, event: any): void {
-        alert(`You dropped with data: ${JSON.stringify(data)}`);
-    }
 }
 </script>
 

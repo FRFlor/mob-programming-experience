@@ -9,8 +9,8 @@
         <div class="station-header">
             <div class="input">
                 <h2>Input</h2>
-                <div class="value" v-if="workstationClass.input === Infinity">∞</div>
-                <div class="value" v-else>{{workstationClass.input}}</div>
+                <div class="value" v-if="workstation.input === Infinity">∞</div>
+                <div class="value" v-else>{{workstation.input}}</div>
             </div>
 
             <div class="station-title">
@@ -20,15 +20,15 @@
                          src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/laptop.svg"
                          alt="Computer">
                     <div class="effort-badge"
-                         v-text="workstationClass.effortRemaining"
-                         v-show="workstationClass.effortRemaining > 0">
+                         v-text="workstation.effortRemaining"
+                         v-show="workstation.effortRemaining > 0">
                     </div>
                 </div>
             </div>
 
             <div class="output">
                 <h2>Output</h2>
-                <div class="value">{{workstationClass.output}}</div>
+                <div class="value">{{workstation.output}}</div>
             </div>
         </div>
 
@@ -42,19 +42,19 @@
                   :image="require('../assets/mini-man.png')">
                 <div class="workers">
                     <div class="worker-avatar">
-                        <img v-if="workstationClass.numberOfWorkers === 1"
+                        <img v-if="workstation.numberOfWorkers === 1"
                              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
                              alt="single worker">
-                        <img v-else-if="workstationClass.numberOfWorkers > 1"
+                        <img v-else-if="workstation.numberOfWorkers > 1"
                              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/multiple-users.svg"
                              alt="multiple workers">
                         <div class="count-badge"
-                             v-if="workstationClass.numberOfWorkers > 1"
-                             v-text="workstationClass.numberOfWorkers"></div>
+                             v-if="workstation.numberOfWorkers > 1"
+                             v-text="workstation.numberOfWorkers"></div>
                     </div>
                     <div class="dice-container">
-                        <dice-roll class="dice"
-                                   v-for="(dice, index) in workstationClass.workersDice"
+                        <dice-view class="dice"
+                                   v-for="(dice, index) in workstation.workersDice"
                                    :dice="dice"
                                    :key="index"/>
                     </div>
@@ -66,13 +66,13 @@
 
 <script lang="ts">
     import {Component, Prop, Vue} from 'vue-property-decorator';
-    import DiceRoll from '@/components/DiceRoll.vue';
-    import {WorkStation as WorkStationClass} from '@/classes/WorkStation';
+    import DiceView from '@/components/DiceView.vue';
+    import {WorkStation} from '@/classes/WorkStation';
 
-    @Component({components: {DiceRoll}})
-    export default class WorkStation extends Vue {
+    @Component({components: {DiceView}})
+    export default class WorkstationView extends Vue {
         @Prop() protected id!: number;
-        @Prop() protected workstationClass!: WorkStationClass;
+        @Prop() protected workstation!: WorkStation;
 
         protected isDraggingOver: boolean = false;
 
