@@ -133,6 +133,16 @@ export class WorkStation {
     public async work(): Promise<void> {
         this.workDone = 0;
         await this.recalculateEffort();
+
+        // Instantaneous calculation
+        if (this.waitMultiplier === 0) {
+            const effectiveWork: number = Math.min(this.inputCount, this.effortCount);
+            this.outputCount += effectiveWork;
+            this.inputCount -= effectiveWork;
+            return;
+        }
+
+        // Animated drainage calculation
         await new Promise((resolve) => setTimeout(resolve, 750 * this.waitMultiplier));
         while (this.inputCount > 0 && this.effortRemaining > 0) {
             this.inputCount--;

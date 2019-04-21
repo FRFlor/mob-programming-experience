@@ -92,6 +92,13 @@ export class ProductionLine {
         const source: WorkStation = this.workStations[workstationId];
         const destination: WorkStation = this.workStations[workstationId + 1];
 
+        // Instantaneous calculation
+        if (this.waitMultiplier === 0) {
+            destination.setInput(destination.input + source.output);
+            source.setOutput(0);
+            return;
+        }
+
         while (source.output > 0) {
             source.decrementOutput();
             destination.incrementInput();

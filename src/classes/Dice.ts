@@ -38,6 +38,7 @@ export class Dice implements IRandomNumberGenerator {
         this.isRolling = true;
         this.roll();
 
+        // Instantaneous roll
         if (this.waitMultiplier === 0) {
             this.isRolling = false;
             return this.value;
