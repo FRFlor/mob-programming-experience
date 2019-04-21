@@ -5,7 +5,9 @@
                               :x="totalProduced"
                               :y="oddsOfProducing"
                               :select-x-value="amountPlayerProduced"/>
-            <button v-ripple :disabled="daysPerCycle === 0" @click="runSimulation">Refine Simulation</button>
+            <button v-ripple
+                    @click="runSimulation"
+                    v-text="simulatedCycles > 0 ? 'Refine Simulation' : 'Start Simulation'"></button>
         </div>
     </div>
 </template>
@@ -32,8 +34,13 @@
         protected countTotals: number[] = [];
 
         protected created() {
-            this.totalProduced = PreLoaded20.x;
-            this.oddsOfProducing = PreLoaded20.y;
+            if (this.daysPerCycle === 20) {
+                this.totalProduced = PreLoaded20.x;
+                this.oddsOfProducing = PreLoaded20.y;
+            } else {
+                this.runSimulation();
+            }
+
             this.guaranteePlayerValueWillBeInRange();
         }
 
@@ -42,7 +49,7 @@
             normalizedChart[0] = this.simulatedCycles;
 
             for (let i = 1; i < this.countTotals.length; i++) {
-                normalizedChart[i] = normalizedChart[i - 1] - this.countTotals[i];
+                normalizedChart[i] = normalizedChart[i - 1] - this.countTotals[i - 1];
             }
 
             this.chartTitle = `Production odds for stations operating for ${this.daysPerCycle} days without management`;
@@ -67,7 +74,7 @@
             Vue.set(this.oddsOfProducing,this.amountPlayerProduced, 100);
         }
 
-        protected async runSimulation() {
+        protected async runSimulation(): void {
             if (this.simulatedCycles === 0) {
                 this.countTotals = Array.from({length: 100}, (_) => 0);
             }
@@ -75,16 +82,14 @@
             const simulation: ProductionLine = new ProductionLine(new DiceFactory());
             simulation.setWaitMultiplier(0);
 
-            for (let j = 0; j < 50; j++) {
+            for (let j = 0; j < 25; j++) {
                 for (let i = 0; i < this.daysPerCycle; i++) {
                     await simulation.work();
                 }
                 this.countTotals[simulation.totalProduced]++;
                 this.simulatedCycles++;
                 simulation.restart();
-                if ((j + 1) % 10 === 0) {
-                    this.recalculateNormalizedChart();
-                }
+                this.recalculateNormalizedChart();
             }
         }
     }
