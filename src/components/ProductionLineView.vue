@@ -1,5 +1,9 @@
 <template>
     <div class="station-chain">
+        <div class="chart">
+            <production-chart/>
+        </div>
+
         <vue-slider height="2px"
                     width="1000px"
                     tooltip-formatter="Scale: {value}%"
@@ -34,10 +38,18 @@
                                 tooltip-placement="right"
                                 v-model="animationMultiplier"/>
                 </div>
+                <div class="d-flex flex-column">
+                    <div class="d-flex">
+                        <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
+                        <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
+                        <button @click="productionLine.restart()" :disabled="isBusy">Restart</button>
+                    </div>
 
-                <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
-                <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
-                <button @click="productionLine.restart()" :disabled="isBusy">Restart</button>
+                    <div class="d-flex">
+                        <button @click="">Chart</button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -58,8 +70,9 @@
     import {DiceFactory} from '@/classes/DiceFactory';
     import {Dice} from '@/classes/Dice';
     import {WorkStation} from '@/classes/WorkStation';
+    import ProductionChart from '@/components/ProductionChart.vue';
 
-    @Component({components: {WorkstationView, VueContext}})
+    @Component({components: {ProductionChart, WorkstationView, VueContext}})
     export default class ProductionLineView extends Vue {
         protected contextStation: number = 0;
         protected isBusy: boolean = false;
@@ -122,6 +135,22 @@
 </script>
 
 <style lang="scss" scoped>
+    .chart {
+        max-width: 1000px;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .flex-column {
+        flex-direction: column;
+    }
+
+    .justify-around {
+        justify-content: space-around;
+    }
+
     .days-of-operation, .animation-duration-slider {
         display: flex;
         flex-direction: column;
