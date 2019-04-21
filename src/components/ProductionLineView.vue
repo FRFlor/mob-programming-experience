@@ -1,66 +1,66 @@
 <template>
-    <div class="d-flex align-center">
-        <div class="station-chain">
-            <vue-slider height="2px"
-                        width="1000px"
-                        tooltip-formatter="Scale: {value}%"
-                        tooltip-placement="right"
-                        v-model="scale"/>
-
-            <div class="grid">
-                <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
-                     v-for="(_, i) in productionLine.workStations"
-                     :style="{'grid-area': `station-${i}`}">
-                    <workstation-view :id="i"
-                                      @drag-drop="onDragDrop"
-                                      :workstation="productionLine.workStations[i]"
-                                      :flow-direction="getFlowDirectionOfStation(i)"/>
-                </div>
-
-                <div class="control-center" :style="{'grid-area': `controls`}">
-                    <div class="days-of-operation">
-                        <h2>Days of Operation</h2>
-                        <div class="value">{{productionLine.days}}</div>
-                    </div>
-                    <div class="animation-duration-slider">
-                        <label for="animation_duration_slider">Animation Duration</label>
-                        <vue-slider direction="btt"
-                                    id="animation_duration_slider"
-                                    height="80px"
-                                    width="10px"
-                                    :max="2"
-                                    :interval="0.1"
-                                    :min="0"
-                                    tooltip-formatter="Animation Duration: x{value}"
-                                    tooltip-placement="right"
-                                    v-model="animationMultiplier"/>
-                    </div>
-                    <div class="d-flex flex-column">
-                        <div class="d-flex">
-                            <button v-ripple @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
-                            <button v-ripple @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
-                            <button v-ripple @click="productionLine.restart()" :disabled="isBusy">Restart</button>
-                        </div>
-
-                        <div class="d-flex">
-                            <button v-ripple @click="runSimulation">Chart</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <vue-context ref="menu">
-                <ul class="context-menu">
-                    <li @click="moveAllWorkersToContextStation">Move all workers</li>
-                </ul>
-            </vue-context>
-        </div>
-        <div class="ml-3">
+    <div class="production-line">
+        <modal name="chart-modal" width="1000" height="auto" draggable>
             <div class="chart">
                 <production-chart v-if="y.length > 0"
                                   :title="chartTitle"
                                   :x="x" :y="y"/>
+            </div>
+        </modal>
+
+        <vue-context ref="menu">
+            <ul class="context-menu">
+                <li @click="moveAllWorkersToContextStation">Move all workers</li>
+            </ul>
+        </vue-context>
+
+        <vue-slider height="2px"
+                    width="1000px"
+                    tooltip-formatter="Scale: {value}%"
+                    tooltip-placement="right"
+                    v-model="scale"/>
+
+        <div class="grid">
+            <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
+                 v-for="(_, i) in productionLine.workStations"
+                 :style="{'grid-area': `station-${i}`}">
+                <workstation-view :id="i"
+                                  @drag-drop="onDragDrop"
+                                  :workstation="productionLine.workStations[i]"
+                                  :flow-direction="getFlowDirectionOfStation(i)"/>
+            </div>
+
+            <div class="control-center" :style="{'grid-area': `controls`}">
+                <div class="days-of-operation">
+                    <h2>Days of Operation</h2>
+                    <div class="value">{{productionLine.days}}</div>
+                </div>
+                <div class="animation-duration-slider">
+                    <label for="animation_duration_slider">Animation Duration</label>
+                    <vue-slider direction="btt"
+                                id="animation_duration_slider"
+                                height="80px"
+                                width="10px"
+                                :max="2"
+                                :interval="0.1"
+                                :min="0"
+                                tooltip-formatter="Animation Duration: x{value}"
+                                tooltip-placement="right"
+                                v-model="animationMultiplier"/>
+                </div>
+                <div class="d-flex flex-column">
+                    <div class="d-flex">
+                        <button v-ripple @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
+                        <button v-ripple @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
+                        <button v-ripple @click="productionLine.restart()" :disabled="isBusy">Restart</button>
+                    </div>
+
+                    <div class="d-flex">
+                        <button v-ripple @click="runSimulation">Chart</button>
+                        <button v-ripple @click="$modal.show('chart-modal')">Show</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -208,10 +208,6 @@
 
     .align-center {
         align-items: center;
-    }
-
-    .ml-3 {
-        margin-left: 1rem;
     }
 
     .days-of-operation, .animation-duration-slider {
