@@ -3,17 +3,7 @@ import ProductionChart from '@/components/ProductionChart.vue';
 
 describe('ProductionChart', () => {
     it('By default adjusts X Axis to start with 5 100% entries and end with 10 0% entries', () => {
-        const givenY: number[] = Array.from({length: 10}, _ => 100);
-        givenY.push(50, 20, 10, 5, 2);
-        givenY.push(...Array.from({length: 20}, _ => 0));
-
-        const givenX: number[] = Array.from({length: givenY.length}, (_, i) => i);
-
-        const expectedY: number[] = Array.from({length: 5}, _ => 100);
-        expectedY.push(50, 20, 10, 5, 2);
-        expectedY.push(...Array.from({length: 10}, _ => 0));
-
-        const expectedX: number[] = Array.from({length: expectedY.length}, (_, i) => i + 5);
+        const {givenX, givenY, expectedX} = getMockdata(5, 10);
 
         const wrapper = shallowMount(ProductionChart, {
             propsData: {
@@ -28,21 +18,11 @@ describe('ProductionChart', () => {
         expect(options.scales.xAxes[0].ticks.min).toBe(expectedX[0]);
         expect(options.scales.xAxes[0].ticks.max).toBe(expectedX[expectedX.length - 1]);
     });
+
     it('Adjusts the X Axis buffer based on given prop:' +
         ' start with minXBuffer 100% entries and end with maxXBuffer 0% entries', () => {
-        const numberOf10s: number = 10;
-        const givenY: number[] = Array.from({length: numberOf10s}, _ => 100);
-        givenY.push(50, 20, 10, 5, 2);
-        givenY.push(...Array.from({length: 20}, _ => 0));
-        const givenX: number[] = Array.from({length: givenY.length}, (_, i) => i);
-
-        const minXBuffer: number = 2;
-        const maxXBuffer: number = 2;
-
-        const expectedY: number[] = Array.from({length: minXBuffer}, _ => 100);
-        expectedY.push(50, 20, 10, 5, 2);
-        expectedY.push(...Array.from({length: maxXBuffer}, _ => 0));
-        const expectedX: number[] = Array.from({length: expectedY.length}, (_, i) => i + numberOf10s - minXBuffer);
+        const [minXBuffer, maxXBuffer] = [2, 2];
+        const {givenX, givenY, expectedX} = getMockdata(minXBuffer, maxXBuffer);
 
         const wrapper = shallowMount(ProductionChart, {
             propsData: {
@@ -60,3 +40,27 @@ describe('ProductionChart', () => {
         expect(options.scales.xAxes[0].ticks.max).toBe(expectedX[expectedX.length - 1]);
     });
 });
+
+
+const getMockdata = (minXBuffer: number, maxXBuffer: number) => {
+    const numberOf100s: number = 10;
+    const middleData: number[] = [50, 20, 10, 5, 2];
+    const numberOf0s: number = 20;
+
+    const givenY: number[] = Array.from({length: numberOf100s}, _ => 100);
+    givenY.push(...middleData);
+    givenY.push(...Array.from({length: numberOf0s}, _ => 0));
+    const givenX: number[] = Array.from({length: givenY.length}, (_, i) => i);
+
+    const expectedY: number[] = Array.from({length: minXBuffer}, _ => 100);
+    expectedY.push(...middleData);
+    expectedY.push(...Array.from({length: maxXBuffer}, _ => 0));
+    const expectedX: number[] = Array.from({length: expectedY.length}, (_, i) => i + numberOf100s - minXBuffer);
+
+    return {
+        givenX,
+        givenY,
+        expectedX,
+        expectedY,
+    };
+};
