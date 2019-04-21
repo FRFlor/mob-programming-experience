@@ -5,6 +5,9 @@ export class UnfairDice implements IRandomNumberGenerator {
     public isRolling: boolean = true;
     public average: number = UnfairDice.guaranteedRollValue;
     public max: number = UnfairDice.guaranteedRollValue;
+    public setWaitMultiplier: (value: number) => void = (_: number) => {
+        return;
+    }
 
     public roll() {
         return UnfairDice.guaranteedRollValue;

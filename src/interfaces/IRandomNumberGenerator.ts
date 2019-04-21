@@ -6,5 +6,4 @@ export interface IRandomNumberGenerator {
     isRolling: boolean;
     average: number;
     max: number;
-    waitMultiplier: number;
 }

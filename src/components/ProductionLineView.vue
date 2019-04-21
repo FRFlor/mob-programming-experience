@@ -83,7 +83,7 @@
         protected isBusy: boolean = false;
         protected scale: number = 100;
         protected animationMultiplier: number = 1;
-        protected productionLine: ProductionLine = new ProductionLine(new DiceFactory);
+        protected productionLine: ProductionLine = new ProductionLine(new DiceFactory());
         protected simulatedCycles: number = 0;
         protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
         protected x: number[] = SimulationData.x;
@@ -115,7 +115,7 @@
         }
 
         protected getFlowDirectionOfStation(stationId: number): FlowDirection {
-            if ([0, 1, 2, 3,].includes(stationId)) {
+            if ([0, 1, 2, 3].includes(stationId)) {
                 return FlowDirection.LeftToRight;
             }
 
@@ -145,7 +145,7 @@
                 this.countTotals = Array.from({length: 100}, (_) => 0);
             }
 
-            const simulation: ProductionLine = new ProductionLine(new DiceFactory);
+            const simulation: ProductionLine = new ProductionLine(new DiceFactory());
             simulation.setWaitMultiplier(0);
 
             const normalizeChart = (countTotals: number[]) => {
@@ -177,6 +177,18 @@
 </script>
 
 <style lang="scss" scoped>
+
+    button {
+        height: 2rem;
+        width: 8rem;
+        background-color: aliceblue;
+        outline: none;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
     .chart {
         min-width: 800px;
         max-width: 1000px;
@@ -256,12 +268,6 @@
             height: 100%;
             background-color: hsl(203, 92%, 95%);
             outline: hsl(0, 0%, 80%) 1px solid;
-
-            button {
-                height: 2rem;
-                width: 8rem;
-                background-color: aliceblue;
-            }
         }
     }
 </style>

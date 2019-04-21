@@ -4,3 +4,4 @@ declare module '*.vue' {
 }
 
 declare module 'vue-context';
+declare module 'vue-ripple-directive';
