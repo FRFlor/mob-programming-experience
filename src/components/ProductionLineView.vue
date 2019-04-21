@@ -1,66 +1,70 @@
 <template>
-    <div class="station-chain">
-        <div class="chart">
-            <production-chart v-if="y.length > 0"
-                              :title="chartTitle"
-                              :x="x" :y="y"/>
-        </div>
+    <div class="d-flex align-center">
+        <div class="station-chain">
+            <vue-slider height="2px"
+                        width="1000px"
+                        tooltip-formatter="Scale: {value}%"
+                        tooltip-placement="right"
+                        v-model="scale"/>
 
-        <vue-slider height="2px"
-                    width="1000px"
-                    tooltip-formatter="Scale: {value}%"
-                    tooltip-placement="right"
-                    v-model="scale"/>
-
-        <div class="grid">
-            <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
-                 v-for="(_, i) in productionLine.workStations"
-                 :style="{'grid-area': `station-${i}`}">
-                <workstation-view :id="i"
-                                  @drag-drop="onDragDrop"
-                                  :workstation="productionLine.workStations[i]"
-                                  :flow-direction="getFlowDirectionOfStation(i)"/>
-            </div>
-
-            <div class="control-center" :style="{'grid-area': `controls`}">
-                <div class="days-of-operation">
-                    <h2>Days of Operation</h2>
-                    <div class="value">{{productionLine.days}}</div>
+            <div class="grid">
+                <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
+                     v-for="(_, i) in productionLine.workStations"
+                     :style="{'grid-area': `station-${i}`}">
+                    <workstation-view :id="i"
+                                      @drag-drop="onDragDrop"
+                                      :workstation="productionLine.workStations[i]"
+                                      :flow-direction="getFlowDirectionOfStation(i)"/>
                 </div>
-                <div class="animation-duration-slider">
-                    <label for="animation_duration_slider">Animation Duration</label>
-                    <vue-slider direction="btt"
-                                id="animation_duration_slider"
-                                height="80px"
-                                width="10px"
-                                :max="2"
-                                :interval="0.1"
-                                :min="0"
-                                tooltip-formatter="Animation Duration: x{value}"
-                                tooltip-placement="right"
-                                v-model="animationMultiplier"/>
-                </div>
-                <div class="d-flex flex-column">
-                    <div class="d-flex">
-                        <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
-                        <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
-                        <button @click="productionLine.restart()" :disabled="isBusy">Restart</button>
+
+                <div class="control-center" :style="{'grid-area': `controls`}">
+                    <div class="days-of-operation">
+                        <h2>Days of Operation</h2>
+                        <div class="value">{{productionLine.days}}</div>
+                    </div>
+                    <div class="animation-duration-slider">
+                        <label for="animation_duration_slider">Animation Duration</label>
+                        <vue-slider direction="btt"
+                                    id="animation_duration_slider"
+                                    height="80px"
+                                    width="10px"
+                                    :max="2"
+                                    :interval="0.1"
+                                    :min="0"
+                                    tooltip-formatter="Animation Duration: x{value}"
+                                    tooltip-placement="right"
+                                    v-model="animationMultiplier"/>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex">
+                            <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
+                            <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
+                            <button @click="productionLine.restart()" :disabled="isBusy">Restart</button>
+                        </div>
+
+                        <div class="d-flex">
+                            <button @click="runSimulation">Chart</button>
+                        </div>
                     </div>
 
-                    <div class="d-flex">
-                        <button @click="runSimulation">Chart</button>
-                    </div>
                 </div>
+            </div>
 
+            <vue-context ref="menu">
+                <ul class="context-menu">
+                    <li @click="moveAllWorkersToContextStation">Move all workers</li>
+                </ul>
+            </vue-context>
+        </div>
+        <div class="ml-3">
+            <div class="chart">
+                <production-chart v-if="y.length > 0"
+                                  :title="chartTitle"
+                                  :x="x" :y="y"/>
             </div>
         </div>
-
-        <vue-context ref="menu">
-            <ul class="context-menu">
-                <li @click="moveAllWorkersToContextStation">Move all workers</li>
-            </ul>
-        </vue-context>
     </div>
+
 </template>
 
 
@@ -155,24 +159,26 @@
                 return normalizedChart.map((point) => Math.round(point / this.simulatedCycles * 100));
             };
 
-            for (let j = 0; j < 25; j++) {
+            for (let j = 0; j < 150; j++) {
                 for (let i = 0; i < 20; i++) {
                     await simulation.work();
                 }
                 this.countTotals[simulation.totalProduced]++;
                 this.simulatedCycles++;
+                this.chartTitle = `Production odds for stations without management (${this.simulatedCycles} cycles)`;
+                this.y = normalizeChart(this.countTotals);
                 simulation.restart();
             }
 
-            this.chartTitle = `Production odds for stations without management (${this.simulatedCycles} cycles)`;
+
             this.x = Array.from({length: 100}, (_, i) => i);
-            this.y = normalizeChart(this.countTotals);
         }
     }
 </script>
 
 <style lang="scss" scoped>
     .chart {
+        min-width: 800px;
         max-width: 1000px;
     }
 
@@ -186,6 +192,14 @@
 
     .justify-around {
         justify-content: space-around;
+    }
+
+    .align-center {
+        align-items: center;
+    }
+
+    .ml-3 {
+        margin-left: 1rem;
     }
 
     .days-of-operation, .animation-duration-slider {
