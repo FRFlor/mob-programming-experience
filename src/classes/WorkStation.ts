@@ -8,13 +8,13 @@ const assertGreaterThanZero = (value: number) => {
 };
 
 export class WorkStation {
-    public static WAIT_MULTIPLIER: number = 1;
     public workersDice: IRandomNumberGenerator[];
     private workerCount: number = 1;
     private inputCount: number = 0; // Material to work with
     private workDone: number = 0;
     private outputCount: number = 0; // Total production from last work cycle
     private rngFactory: IRngFactory;
+    private waitMultiplier: number = 1;
 
     constructor(rngFactory: IRngFactory) {
         this.rngFactory = rngFactory;
@@ -31,6 +31,15 @@ export class WorkStation {
 
     public get output(): number {
         return this.outputCount;
+    }
+
+    public setWaitMultiplier(value: number): void {
+        if (value < 0) {
+            throw new DOMException('Wait Multiplier must be greater or equal to 0');
+        }
+
+        this.waitMultiplier = value;
+        this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.setWaitMultiplier(this.waitMultiplier));
     }
 
     public setOutput(amount: number): void {
@@ -78,6 +87,7 @@ export class WorkStation {
 
     public refreshDice(): void {
         this.workersDice = this.rngFactory.getRngArray(this.workerCount);
+        this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.setWaitMultiplier(this.waitMultiplier));
     }
 
     public diceAreRolling(): boolean {
@@ -123,7 +133,7 @@ export class WorkStation {
     public async work(): Promise<void> {
         this.workDone = 0;
         await this.recalculateEffort();
-        await new Promise((resolve) => setTimeout(resolve, 750 * WorkStation.WAIT_MULTIPLIER));
+        await new Promise((resolve) => setTimeout(resolve, 750 * this.waitMultiplier));
         while (this.inputCount > 0 && this.effortRemaining > 0) {
             this.inputCount--;
             this.workDone++;
@@ -134,7 +144,7 @@ export class WorkStation {
             //  - 50ms at the fastest (if remaining effort is a large value)
             const referenceTime: number = Math.min(this.effortRemaining, this.input);
             const waitTime = Math.min(Math.max((4700 - 400 * referenceTime) / 7, 50), 250);
-            await new Promise((resolve) => setTimeout(resolve, waitTime * WorkStation.WAIT_MULTIPLIER));
+            await new Promise((resolve) => setTimeout(resolve, waitTime * this.waitMultiplier));
         }
     }
 }

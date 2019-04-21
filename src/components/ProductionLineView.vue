@@ -82,9 +82,7 @@
 
         @Watch('animationMultiplier')
         protected onAnimationMultiplierChanged(): void {
-            ProductionLine.WAIT_MULTIPLIER = this.animationMultiplier;
-            WorkStation.WAIT_MULTIPLIER = this.animationMultiplier;
-            Dice.WAIT_MULTIPLIER = this.animationMultiplier;
+            this.productionLine.setWaitMultiplier(this.animationMultiplier);
         }
 
         @Watch('scale')

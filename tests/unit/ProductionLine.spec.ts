@@ -9,8 +9,7 @@ describe('ProductionLine', () => {
 
     beforeEach(() => {
         productionLine = new ProductionLine(new UnfairRngFactory());
-        ProductionLine.WAIT_MULTIPLIER = 0;
-        WorkStation.WAIT_MULTIPLIER = 0;
+        productionLine.setWaitMultiplier(0);
     });
 
     it('has infinite input value for the first workstation', () => {

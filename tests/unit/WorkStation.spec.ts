@@ -8,7 +8,7 @@ describe('WorkStation', () => {
 
     beforeEach(() => {
         workStation = new WorkStation(new UnfairRngFactory());
-        WorkStation.WAIT_MULTIPLIER = 0;
+        this.setWaitMultiplier(0);
     });
 
     it('defaults to being created with one worker on it', () => {

@@ -8,12 +8,12 @@ const assertWorkstationExists = (id: number) => {
 };
 
 export class ProductionLine {
-    public static WAIT_MULTIPLIER: number = 1;
     public static STARTING_INPUT: number = 4;
     public static STATIONS_COUNT: number = 10;
     public workStations: WorkStation[] = [];
     private daysElapsed: number = 0;
     private rngFactory: IRngFactory;
+    private waitMultiplier: number = 1;
 
     constructor(rngFactory: IRngFactory) {
         this.rngFactory = rngFactory;
@@ -26,7 +26,7 @@ export class ProductionLine {
 
     public async work(): Promise<void> {
         await this.generateProducts();
-        await new Promise((resolve) => setTimeout(resolve, 300 * ProductionLine.WAIT_MULTIPLIER));
+        await new Promise((resolve) => setTimeout(resolve, 300 * this.waitMultiplier));
         await this.moveAllProductsAlong();
         this.daysElapsed++;
     }
@@ -36,6 +36,15 @@ export class ProductionLine {
         assertWorkstationExists(to);
         this.workStations[from].decrementWorkers();
         this.workStations[to].incrementWorkers();
+    }
+
+    public setWaitMultiplier(value: number): void {
+        if (value < 0) {
+            throw new DOMException('Wait Multiplier must be greater or equal to 0');
+        }
+
+        this.waitMultiplier = value;
+        this.workStations.forEach((workStation: WorkStation) => workStation.setWaitMultiplier(this.waitMultiplier));
     }
 
     public moveAllWorkersTo(stationId: number): void {
@@ -55,6 +64,7 @@ export class ProductionLine {
 
     public restart(): void {
         this.workStations = Array.from({length: ProductionLine.STATIONS_COUNT}, () => new WorkStation(this.rngFactory));
+        this.workStations.forEach((workStation: WorkStation) => workStation.setWaitMultiplier(this.waitMultiplier));
         this.workStations.forEach((workStation: WorkStation) => workStation.setInput(ProductionLine.STARTING_INPUT));
         this.workStations[0].setInput(Infinity);
         this.daysElapsed = 0;
@@ -82,7 +92,7 @@ export class ProductionLine {
             source.decrementOutput();
             destination.incrementInput();
             const waitTime = Math.min(Math.max((4700 - 400 * source.output) / 7, 50), 150);
-            await new Promise((resolve) => setTimeout(resolve, waitTime * ProductionLine.WAIT_MULTIPLIER));
+            await new Promise((resolve) => setTimeout(resolve, waitTime * this.waitMultiplier));
         }
     }
 }
