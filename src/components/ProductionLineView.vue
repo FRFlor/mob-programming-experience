@@ -75,7 +75,7 @@
     import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
     import ProductionChart from '@/components/ProductionChart.vue';
-    import SimulationData from '../simulations/unmanaged';
+    import SimulationData from '../simulations/unmanaged-20days';
 
     @Component({components: {ProductionChart, WorkstationView, VueContext}})
     export default class ProductionLineView extends Vue {
