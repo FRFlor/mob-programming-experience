@@ -22,11 +22,7 @@ export class Dice implements IRandomNumberGenerator {
     }
 
     public roll(): number {
-        const lastRoll: number = this.faceValue;
-
-        do {
-            this.faceValue = randomBetween(Dice.MIN, Dice.MAX);
-        } while (lastRoll === this.faceValue);
+        this.faceValue = randomBetween(Dice.MIN, Dice.MAX);
 
         return this.faceValue;
     }

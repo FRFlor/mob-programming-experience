@@ -15,13 +15,4 @@ describe('Dice', () => {
         }
     });
 
-    it('does not repeat the roll value between rolls', () => {
-        let previousResult: number = 0;
-
-        for (let i = 0; i < TEST_LOOP_COUNT; i++) {
-            const result: number = dice.roll();
-            expect(result).not.toEqual(previousResult);
-            previousResult = result;
-        }
-    });
 });
