@@ -15,6 +15,16 @@
                 required: false,
                 default: () => Array.from({length: 20}, (_, i) => 100 - 5 * i),
             },
+            minXBuffer: {
+                type: Number,
+                required: false,
+                default: 5,
+            },
+            maxXBuffer: {
+                type: Number,
+                required: false,
+                default: 10,
+            },
             title: {
                 type: String,
                 required: false,
@@ -27,6 +37,28 @@
             },
         },
         computed: {
+            indexOfLast100: function() {
+                for (let i = 0; i < this.y.length; i++) {
+                    if (this.y[i] !== 100) {
+                        return i - 1;
+                    }
+                }
+                return -1;
+            },
+            indexOfFirst0: function() {
+                for (let i = 0; i < this.y.length; i++) {
+                    if (this.y[i] === 0) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+            minX: function() {
+                return Math.max(this.indexOfLast100 - (this.minXBuffer - 1), 0);
+            },
+            maxX: function() {
+                return Math.min(this.indexOfFirst0 + (this.maxXBuffer - 1), this.x.length - 1);
+            },
             chartData: function() {
                 return {
                     //Data to be represented on x-axis
@@ -72,8 +104,8 @@
                                 },
                                 ticks: {
                                     beginAtZero: false,
-                                    min: 40,
-                                    max: 75,
+                                    min: this.minX,
+                                    max: this.maxX,
                                 },
                                 gridLines: {
                                     display: false,
