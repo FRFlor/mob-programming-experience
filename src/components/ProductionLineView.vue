@@ -1,7 +1,8 @@
 <template>
     <div class="station-chain">
         <div class="chart">
-            <production-chart/>
+            {{simulatedCycles}}
+            <production-chart :x="x" :y="y"/>
         </div>
 
         <vue-slider height="2px"
@@ -46,7 +47,7 @@
                     </div>
 
                     <div class="d-flex">
-                        <button @click="">Chart</button>
+                        <button @click="runSimulation">Chart</button>
                     </div>
                 </div>
 
@@ -68,8 +69,6 @@
     import {VueContext} from 'vue-context';
     import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
-    import {Dice} from '@/classes/Dice';
-    import {WorkStation} from '@/classes/WorkStation';
     import ProductionChart from '@/components/ProductionChart.vue';
 
     @Component({components: {ProductionChart, WorkstationView, VueContext}})
@@ -79,6 +78,9 @@
         protected scale: number = 100;
         protected animationMultiplier: number = 1;
         protected productionLine: ProductionLine = new ProductionLine(new DiceFactory);
+        protected simulatedCycles: number = 0;
+        protected x: number[] = [];
+        protected y: number[] = [];
 
         @Watch('animationMultiplier')
         protected onAnimationMultiplierChanged(): void {
@@ -109,7 +111,7 @@
                 return FlowDirection.LeftToRight;
             }
 
-            if([4,5].includes(stationId)) {
+            if ([4, 5].includes(stationId)) {
                 return FlowDirection.TopToBottom;
             }
 
@@ -128,6 +130,39 @@
 
         protected moveAllWorkersToContextStation() {
             this.productionLine.moveAllWorkersTo(this.contextStation);
+        }
+
+        protected async runSimulation() {
+            const simulation: ProductionLine = new ProductionLine(new DiceFactory);
+            simulation.setWaitMultiplier(0);
+
+            this.x = Array.from({length: 100}, (_, i) => i);
+            const countTotals: number[] = Array.from({length: 100}, (_) => 0);
+
+            const normalizeChart = (countTotals: number[]) => {
+                const normalizedChart: number[] = [];
+                normalizedChart[0] = this.simulatedCycles;
+
+                for (let i = 1; i < countTotals.length; i++) {
+                    normalizedChart[i] = normalizedChart[i-1] - countTotals[i-1];
+                }
+
+                return normalizedChart.map((point) => point/this.simulatedCycles * 100);
+            };
+
+            for (let j = 0; j < 1000; j++) {
+                for (let i = 0; i < 20; i++) {
+                    await simulation.work();
+                }
+                const totalProduced = simulation.totalProduced;
+                countTotals[totalProduced]++;
+                this.simulatedCycles++;
+                simulation.restart();
+            }
+
+            this.y = normalizeChart(countTotals);
+
+
         }
     }
 </script>
@@ -162,10 +197,12 @@
         .value {
             font-size: 2rem;
         }
+
         h2 {
             font-size: 1rem;
             margin: 0;
         }
+
         label {
             font-size: 0.75rem;
             width: 5rem;
@@ -177,7 +214,7 @@
         display: grid;
         grid-template-columns: repeat(5, 200px);
         width: 200px*5;
-        border:  hsl(203, 40%, 30%) 4px solid;
+        border: hsl(203, 40%, 30%) 4px solid;
         background-color: hsl(203, 40%, 50%);
         transform-origin: 0 0;
         transform: scale(var(--scale));
@@ -201,6 +238,7 @@
             height: 100%;
             background-color: hsl(203, 92%, 95%);
             outline: hsl(0, 0%, 80%) 1px solid;
+
             button {
                 height: 2rem;
                 width: 8rem;

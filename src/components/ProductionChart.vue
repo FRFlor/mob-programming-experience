@@ -16,23 +16,27 @@
                 default: () => Array.from({length: 20}, (_, i) => 100 - 5*i),
             }
         },
+        computed: {
+          chartData: function () {
+              return  {
+                  //Data to be represented on x-axis
+                  labels: this.x,
+                  datasets: [
+                      {
+                          label: 'Data One',
+                          backgroundColor: '#f87979',
+                          pointBackgroundColor: 'white',
+                          borderWidth: 1,
+                          pointBorderColor: '#249EBF',
+                          //Data to be represented on y-axis
+                          data: this.y
+                      }
+                  ]
+              }
+          },
+        },
         data () {
             return {
-                datacollection: {
-                    //Data to be represented on x-axis
-                    labels: this.x,
-                    datasets: [
-                        {
-                            label: 'Data One',
-                            backgroundColor: '#f87979',
-                            pointBackgroundColor: 'white',
-                            borderWidth: 1,
-                            pointBorderColor: '#249EBF',
-                            //Data to be represented on y-axis
-                            data: this.y
-                        }
-                    ]
-                },
                 //Chart.js options that controls the appearance of the chart
                 options: {
                     title: {
@@ -46,7 +50,7 @@
                                 labelString: 'Probability %'
                             },
                             ticks: {
-                                beginAtZero: true
+                                beginAtZero: false,
                             },
                             gridLines: {
                                 display: true
@@ -56,6 +60,11 @@
                             scaleLabel: {
                                 display: true,
                                 labelString: 'Production Total'
+                            },
+                            ticks: {
+                                beginAtZero: false,
+                                min: 40,
+                                max: 75
                             },
                             gridLines: {
                                 display: false
@@ -72,7 +81,23 @@
         },
         mounted () {
             //renderChart function renders the chart with the datacollection and options object.
-            this.renderChart(this.datacollection, this.options)
+            this.renderChart(this.chartData, this.options)
+        },
+        watch: {
+            x: function () {
+                if (this._chart) {
+                    this._chart.destroy();
+                }
+
+                this.renderChart(this.chartData, this.options)
+            },
+            y: function () {
+                if (this._chart) {
+                    this._chart.destroy();
+                }
+
+                this.renderChart(this.chartData, this.options)
+            }
         }
     }
 </script>

@@ -24,6 +24,10 @@ export class ProductionLine {
         return this.daysElapsed;
     }
 
+    public get totalProduced(): number {
+        return this.workStations[this.workStations.length - 1].output;
+    }
+
     public async work(): Promise<void> {
         await this.generateProducts();
         await new Promise((resolve) => setTimeout(resolve, 300 * this.waitMultiplier));
