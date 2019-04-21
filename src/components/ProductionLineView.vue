@@ -135,8 +135,6 @@
         protected async runSimulation() {
             const simulation: ProductionLine = new ProductionLine(new DiceFactory);
             simulation.setWaitMultiplier(0);
-
-            this.x = Array.from({length: 100}, (_, i) => i);
             const countTotals: number[] = Array.from({length: 100}, (_) => 0);
 
             const normalizeChart = (countTotals: number[]) => {
@@ -144,25 +142,23 @@
                 normalizedChart[0] = this.simulatedCycles;
 
                 for (let i = 1; i < countTotals.length; i++) {
-                    normalizedChart[i] = normalizedChart[i-1] - countTotals[i-1];
+                    normalizedChart[i] = normalizedChart[i-1] - countTotals[i];
                 }
 
-                return normalizedChart.map((point) => point/this.simulatedCycles * 100);
+                return normalizedChart.map((point) => Math.round(point/this.simulatedCycles * 100));
             };
 
             for (let j = 0; j < 1000; j++) {
                 for (let i = 0; i < 20; i++) {
                     await simulation.work();
                 }
-                const totalProduced = simulation.totalProduced;
-                countTotals[totalProduced]++;
+                countTotals[simulation.totalProduced]++;
                 this.simulatedCycles++;
                 simulation.restart();
             }
 
+            this.x = Array.from({length: 100}, (_, i) => i);
             this.y = normalizeChart(countTotals);
-
-
         }
     }
 </script>
