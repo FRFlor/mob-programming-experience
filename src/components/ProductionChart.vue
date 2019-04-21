@@ -57,11 +57,20 @@
                 }
                 return -1;
             },
+            indexOfSelectedValue: function() {
+                if (this.selectXValue === undefined) {
+                    return -1;
+                }
+
+                return this.selectXValue;
+            },
             minX: function() {
                 return Math.max(this.indexOfLast100 - (this.minXBuffer - 1), 0);
             },
             maxX: function() {
-                return Math.min(this.indexOfFirst0 + (this.maxXBuffer - 1), this.x.length - 1);
+                const cropPoint = Math.max(this.indexOfSelectedValue, this.indexOfFirst0);
+
+                return Math.min(cropPoint + (this.maxXBuffer - 1), this.x.length - 1);
             },
             chartData: function() {
                 return {

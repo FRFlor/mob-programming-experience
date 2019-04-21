@@ -5,7 +5,7 @@
                               :x="totalProduced"
                               :y="oddsOfProducing"
                               :select-x-value="amountPlayerProduced"/>
-            <button v-ripple :disabled="daysPerCycle === 0" @click="runSimulation">Start Simulation</button>
+            <button v-ripple :disabled="daysPerCycle === 0" @click="runSimulation">Refine Simulation</button>
         </div>
     </div>
 </template>
@@ -16,6 +16,7 @@
     import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
     import ProductionChart from '@/components/ProductionChart.vue';
+
     @Component({
         components: {ProductionChart}
     })
@@ -26,9 +27,15 @@
         protected simulatedCycles: number = 0;
         protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
 
-        protected totalProduced: number[] = PreLoaded20.x;
-        protected oddsOfProducing: number[] = PreLoaded20.y;
+        protected totalProduced: number[] = [];
+        protected oddsOfProducing: number[] = [];
         protected countTotals: number[] = [];
+
+        protected created() {
+            this.totalProduced = PreLoaded20.x;
+            this.oddsOfProducing = PreLoaded20.y;
+            this.guaranteePlayerValueWillBeInRange();
+        }
 
         protected recalculateNormalizedChart(): void {
             const normalizedChart: number[] = [];
@@ -44,6 +51,20 @@
             this.totalProduced = Array.from({length: this.countTotals.length}, (_, i) => i);
             // y axis
             this.oddsOfProducing = normalizedChart.map((point) => Math.round(point / this.simulatedCycles * 100));
+
+            this.guaranteePlayerValueWillBeInRange();
+        }
+
+        protected guaranteePlayerValueWillBeInRange(): void {
+            if (this.amountPlayerProduced === undefined) {
+                return;
+            }
+
+            if (this.oddsOfProducing[this.amountPlayerProduced] > 0) {
+                return;
+            }
+
+            Vue.set(this.oddsOfProducing,this.amountPlayerProduced, 100);
         }
 
         protected async runSimulation() {
@@ -61,7 +82,7 @@
                 this.countTotals[simulation.totalProduced]++;
                 this.simulatedCycles++;
                 simulation.restart();
-                if ((j+1) % 10 === 0) {
+                if ((j + 1) % 10 === 0) {
                     this.recalculateNormalizedChart();
                 }
             }
