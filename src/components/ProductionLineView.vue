@@ -8,18 +8,18 @@
 
         <div class="grid">
             <div class="station-wrapper" @contextmenu.prevent="openContextForStation($event, i)"
-                 v-for="(_, i) in stationChain.workStations"
+                 v-for="(_, i) in productionLine.workStations"
                  :style="{'grid-area': `station-${i}`}">
                 <workstation-view :id="i"
                                   @drag-drop="onDragDrop"
-                                  :workstation="stationChain.workStations[i]"
+                                  :workstation="productionLine.workStations[i]"
                                   :flow-direction="getFlowDirectionOfStation(i)"/>
             </div>
 
             <div class="control-center" :style="{'grid-area': `controls`}">
                 <div class="days-of-operation">
                     <h2>Days of Operation</h2>
-                    <div class="value">{{stationChain.days}}</div>
+                    <div class="value">{{productionLine.days}}</div>
                 </div>
                 <div class="animation-duration-slider">
                     <label for="animation_duration_slider">Animation Duration</label>
@@ -64,7 +64,7 @@
         protected isBusy: boolean = false;
         protected scale: number = 100;
         protected animationMultiplier: number = 1;
-        protected stationChain: ProductionLine = new ProductionLine(new DiceFactory);
+        protected productionLine: ProductionLine = new ProductionLine(new DiceFactory);
 
         @Watch('animationMultiplier')
         protected onAnimationMultiplierChanged(): void {
@@ -80,14 +80,14 @@
 
         protected async doSingleWorkCycle(): Promise<void> {
             this.isBusy = true;
-            await this.stationChain.work();
+            await this.productionLine.work();
             this.isBusy = false;
         }
 
         protected async fastForwardCycles(numberOfDays: number): Promise<void> {
             this.isBusy = true;
             for (let i = 0; i < numberOfDays; i++) {
-                await this.stationChain.work();
+                await this.productionLine.work();
             }
             this.isBusy = false;
         }
@@ -105,7 +105,7 @@
         }
 
         protected onDragDrop({sourceId, destinationId}: any): void {
-            this.stationChain.moveWorker(sourceId, destinationId);
+            this.productionLine.moveWorker(sourceId, destinationId);
         }
 
         protected openContextForStation(event: any, stationId: number): void {
@@ -115,7 +115,7 @@
         }
 
         protected moveAllWorkersToContextStation() {
-            this.stationChain.moveAllWorkersTo(this.contextStation);
+            this.productionLine.moveAllWorkersTo(this.contextStation);
         }
     }
 </script>
