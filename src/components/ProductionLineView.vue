@@ -37,13 +37,13 @@
                     </div>
                     <div class="d-flex flex-column">
                         <div class="d-flex">
-                            <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
-                            <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
-                            <button @click="productionLine.restart()" :disabled="isBusy">Restart</button>
+                            <button v-ripple @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
+                            <button v-ripple @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
+                            <button v-ripple @click="productionLine.restart()" :disabled="isBusy">Restart</button>
                         </div>
 
                         <div class="d-flex">
-                            <button @click="runSimulation">Chart</button>
+                            <button v-ripple @click="runSimulation">Chart</button>
                         </div>
                     </div>
 
