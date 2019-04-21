@@ -1,8 +1,9 @@
 <template>
     <div class="station-chain">
         <div class="chart">
-            {{simulatedCycles}}
-            <production-chart :x="x" :y="y"/>
+            <production-chart v-if="y.length > 0"
+                              :title="chartTitle"
+                              :x="x" :y="y"/>
         </div>
 
         <vue-slider height="2px"
@@ -70,6 +71,7 @@
     import {ProductionLine} from '@/classes/ProductionLine';
     import {DiceFactory} from '@/classes/DiceFactory';
     import ProductionChart from '@/components/ProductionChart.vue';
+    import SimulationData from '../simulations/unmanaged';
 
     @Component({components: {ProductionChart, WorkstationView, VueContext}})
     export default class ProductionLineView extends Vue {
@@ -79,8 +81,10 @@
         protected animationMultiplier: number = 1;
         protected productionLine: ProductionLine = new ProductionLine(new DiceFactory);
         protected simulatedCycles: number = 0;
-        protected x: number[] = [];
-        protected y: number[] = [];
+        protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
+        protected x: number[] = SimulationData.x;
+        protected y: number[] = SimulationData.y;
+        protected countTotals: number[] = [];
 
         @Watch('animationMultiplier')
         protected onAnimationMultiplierChanged(): void {
@@ -133,32 +137,36 @@
         }
 
         protected async runSimulation() {
+            if (this.simulatedCycles === 0) {
+                this.countTotals = Array.from({length: 100}, (_) => 0);
+            }
+
             const simulation: ProductionLine = new ProductionLine(new DiceFactory);
             simulation.setWaitMultiplier(0);
-            const countTotals: number[] = Array.from({length: 100}, (_) => 0);
 
             const normalizeChart = (countTotals: number[]) => {
                 const normalizedChart: number[] = [];
                 normalizedChart[0] = this.simulatedCycles;
 
                 for (let i = 1; i < countTotals.length; i++) {
-                    normalizedChart[i] = normalizedChart[i-1] - countTotals[i];
+                    normalizedChart[i] = normalizedChart[i - 1] - countTotals[i];
                 }
 
-                return normalizedChart.map((point) => Math.round(point/this.simulatedCycles * 100));
+                return normalizedChart.map((point) => Math.round(point / this.simulatedCycles * 100));
             };
 
-            for (let j = 0; j < 1000; j++) {
+            for (let j = 0; j < 25; j++) {
                 for (let i = 0; i < 20; i++) {
                     await simulation.work();
                 }
-                countTotals[simulation.totalProduced]++;
+                this.countTotals[simulation.totalProduced]++;
                 this.simulatedCycles++;
                 simulation.restart();
             }
 
+            this.chartTitle = `Production odds for stations without management (${this.simulatedCycles} cycles)`;
             this.x = Array.from({length: 100}, (_, i) => i);
-            this.y = normalizeChart(countTotals);
+            this.y = normalizeChart(this.countTotals);
         }
     }
 </script>
