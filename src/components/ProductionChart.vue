@@ -15,6 +15,10 @@
                 required: false,
                 default: () => Array.from({length: 20}, (_, i) => 100 - 5 * i),
             },
+            selectXValue: {
+                required: false,
+                default: undefined,
+            },
             minXBuffer: {
                 type: Number,
                 required: false,
@@ -66,7 +70,12 @@
                     datasets: [
                         {
                             label: 'Data One',
-                            backgroundColor: '#f87979',
+                            backgroundColor: this.y.map((yValue, xValue) => {
+                                if (xValue === this.selectXValue) {
+                                    return 'hsl(100,50%,52%)';
+                                }
+                                return '#f87979';
+                            }),
                             pointBackgroundColor: 'white',
                             borderWidth: 1,
                             pointBorderColor: '#249EBF',
@@ -100,7 +109,7 @@
                             {
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Production Total',
+                                    labelString: 'Minimal Production Total',
                                 },
                                 ticks: {
                                     beginAtZero: false,

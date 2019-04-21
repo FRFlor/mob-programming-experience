@@ -1,7 +1,9 @@
 <template>
     <div class="production-line">
         <modal name="chart-modal" width="1000" height="auto" draggable>
-            <simulation-charter :days-per-cycle="productionLine.days"/>
+            <simulation-charter
+                    :days-per-cycle="productionLine.days"
+                    :amount-player-produced="productionLine.totalProduced"/>
         </modal>
 
         <vue-context ref="menu">

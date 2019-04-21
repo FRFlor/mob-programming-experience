@@ -2,8 +2,10 @@
     <div class="simulation-charter">
         <div class="chart">
             <production-chart :title="chartTitle"
-                              :x="totalProduced" :y="oddsOfProducing"/>
-            <button v-ripple @click="runSimulation">Start Simulation</button>
+                              :x="totalProduced"
+                              :y="oddsOfProducing"
+                              :select-x-value="amountPlayerProduced"/>
+            <button v-ripple :disabled="daysPerCycle === 0" @click="runSimulation">Start Simulation</button>
         </div>
     </div>
 </template>
@@ -19,6 +21,7 @@
     })
     export default class SimulationCharter extends Vue {
         @Prop({default: 20}) daysPerCycle!: number;
+        @Prop({default: undefined}) amountPlayerProduced?: number;
 
         protected simulatedCycles: number = 0;
         protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
@@ -51,14 +54,16 @@
             const simulation: ProductionLine = new ProductionLine(new DiceFactory());
             simulation.setWaitMultiplier(0);
 
-            for (let j = 0; j < 150; j++) {
+            for (let j = 0; j < 50; j++) {
                 for (let i = 0; i < this.daysPerCycle; i++) {
                     await simulation.work();
                 }
                 this.countTotals[simulation.totalProduced]++;
                 this.simulatedCycles++;
                 simulation.restart();
-                this.recalculateNormalizedChart();
+                if ((j+1) % 10 === 0) {
+                    this.recalculateNormalizedChart();
+                }
             }
         }
     }
