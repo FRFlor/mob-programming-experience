@@ -37,6 +37,7 @@
 
                 <button @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
                 <button @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
+                <button @click="productionLine.restart()" :disabled="isBusy">Restart</button>
             </div>
         </div>
 

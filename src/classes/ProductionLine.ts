@@ -11,13 +11,13 @@ export class ProductionLine {
     public static WAIT_MULTIPLIER: number = 1;
     public static STARTING_INPUT: number = 4;
     public static STATIONS_COUNT: number = 10;
-    public workStations: WorkStation[];
+    public workStations: WorkStation[] = [];
     private daysElapsed: number = 0;
+    private rngFactory: IRngFactory;
 
     constructor(rngFactory: IRngFactory) {
-        this.workStations = Array.from({length: ProductionLine.STATIONS_COUNT}, () => new WorkStation(rngFactory));
-        this.workStations.forEach((workStation: WorkStation) => workStation.setInput(ProductionLine.STARTING_INPUT));
-        this.workStations[0].setInput(Infinity);
+        this.rngFactory = rngFactory;
+        this.restart();
     }
 
     public get days(): number {
@@ -51,6 +51,13 @@ export class ProductionLine {
                 destination.incrementWorkers();
             }
         });
+    }
+
+    public restart(): void {
+        this.workStations = Array.from({length: ProductionLine.STATIONS_COUNT}, () => new WorkStation(this.rngFactory));
+        this.workStations.forEach((workStation: WorkStation) => workStation.setInput(ProductionLine.STARTING_INPUT));
+        this.workStations[0].setInput(Infinity);
+        this.daysElapsed = 0;
     }
 
     protected async generateProducts(): Promise<void> {
