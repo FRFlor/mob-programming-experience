@@ -20,7 +20,11 @@
                 required: false,
                 default: '',
             },
-
+            noRendering: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         computed: {
             chartData: function() {
@@ -85,23 +89,25 @@
             },
         },
         mounted() {
-            //renderChart function renders the chart with the datacollection and options object.
-            this.renderChart(this.chartData, this.options);
+            this.render();
+        },
+        methods: {
+            render() {
+                if (!this.noRendering) {
+                    if (this._chart) {
+                        this._chart.destroy();
+                    }
+
+                    this.renderChart(this.chartData, this.options);
+                }
+            },
         },
         watch: {
             x: function() {
-                if (this._chart) {
-                    this._chart.destroy();
-                }
-
-                this.renderChart(this.chartData, this.options);
+                this.render();
             },
             y: function() {
-                if (this._chart) {
-                    this._chart.destroy();
-                }
-
-                this.renderChart(this.chartData, this.options);
+                this.render();
             },
         },
     };
