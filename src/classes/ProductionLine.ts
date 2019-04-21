@@ -9,7 +9,7 @@ const assertWorkstationExists = (id: number) => {
 
 export class ProductionLine {
     public static WAIT_MULTIPLIER: number = 1;
-    public static STARTING_INPUT: number = 3;
+    public static STARTING_INPUT: number = 4;
     public static STATIONS_COUNT: number = 10;
     public workStations: WorkStation[];
     private daysElapsed: number = 0;
