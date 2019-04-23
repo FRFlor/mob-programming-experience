@@ -56,7 +56,7 @@
                     <div class="d-flex">
                         <button class="statistics-trigger"
                                 @click="$modal.show('chart-modal')"
-                                :disabled="productionLine.days === 0"
+                                :disabled="productionLine.days === 0 || isBusy"
                                 v-ripple >
                             Show statistics<br/>(Your management vs No Management)
                         </button>
