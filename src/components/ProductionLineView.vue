@@ -119,7 +119,9 @@
 
         protected async demonstrateMobbing(): Promise<void> {
             const originalAnimationMultiplier: number = this.animationMultiplier;
-            this.animationMultiplier = 0.1;
+            if (this.animationMultiplier > 0.1) {
+                this.animationMultiplier = 0.1;
+            }
 
             await this.productionLine.mob();
 
