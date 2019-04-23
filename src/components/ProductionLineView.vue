@@ -48,13 +48,15 @@
                 </div>
                 <div class="d-flex flex-column">
                     <div class="d-flex">
-                        <button v-ripple @click="doSingleWorkCycle" :disabled="isBusy">Work!</button>
-                        <button v-ripple @click="fastForwardCycles(10)" :disabled="isBusy">Work 10 days!</button>
+                        <button v-ripple @click="doSingleWorkCycle" :disabled="isBusy">Work for 1 day</button>
+                        <button v-ripple @click="fastForwardCycles(10)" :disabled="isBusy">Work for 10 days!</button>
                         <button v-ripple @click="productionLine.restart()" :disabled="isBusy">Restart</button>
                     </div>
 
                     <div class="d-flex">
-                        <button v-ripple @click="$modal.show('chart-modal')">Show</button>
+                        <button class="statistics-trigger" v-ripple @click="$modal.show('chart-modal')">
+                            Show statistics<br/>(Your management vs No Management)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -135,13 +137,20 @@
 <style lang="scss" scoped>
 
     button {
+        margin-top: 1rem;
         height: 2rem;
-        width: 8rem;
+        min-width: 8rem;
         background-color: aliceblue;
         outline: none;
 
         &:hover {
             cursor: pointer;
+        }
+
+        &.statistics-trigger {
+            margin-top: 0.5rem;
+            flex: 1;
+            height: 4rem;
         }
     }
 

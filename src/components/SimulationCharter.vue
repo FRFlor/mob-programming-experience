@@ -5,9 +5,12 @@
                               :x="totalProduced"
                               :y="oddsOfProducing"
                               :select-x-value="amountPlayerProduced"/>
-            <button v-ripple
-                    @click="runSimulation"
-                    v-text="simulatedCycles > 0 ? 'Refine Simulation' : 'Start Simulation'"></button>
+
+            <div class="controls">
+                <button v-ripple
+                        @click="runSimulation"
+                        v-text="simulatedCycles > 0 ? 'Refine Simulation' : 'Start Simulation'"></button>
+            </div>
         </div>
     </div>
 </template>
@@ -100,4 +103,17 @@
         min-width: 800px;
         max-width: 1000px;
     }
+
+    .controls {
+        margin-left: 60px;
+        display: flex;
+        justify-content: center;
+        button {
+            height: 4rem;
+            width: 15rem;
+            margin: 2rem;
+            font-size: 1.2rem;
+        }
+    }
+
 </style>
