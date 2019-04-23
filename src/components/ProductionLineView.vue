@@ -128,7 +128,9 @@
 
         protected async demonstrateMobbing(): Promise<void> {
             await this.speedUpCallback(async () => {
+                this.isBusy = true;
                 await this.productionLine.mob();
+                this.isBusy = false;
             });
             this.showStatisticsChart();
         }
