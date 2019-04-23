@@ -165,7 +165,7 @@
 <style lang="scss" scoped>
 
     button {
-        margin-top: 1rem;
+        margin: 0.15rem;
         height: 2rem;
         min-width: 8rem;
         background-color: aliceblue;
@@ -179,7 +179,6 @@
         }
 
         &.statistics-trigger {
-            margin-top: 0.5rem;
             flex: 1;
             height: 4rem;
         }
