@@ -42,6 +42,16 @@
                   :transfer-data="{ sourceId: id }"
                   :image="require('../assets/mini-man.png')">
                 <div class="workers">
+                    <div class="input-balls-container">
+                        <div class="ball"
+                             :style="inputColour"
+                             v-for="i in inputBallsCount"></div>
+                    </div>
+                    <div class="output-balls-container" v-if="workstation.output">
+                        <div class="ball"
+                             style="background-color: hsl(240, 34%, 33%);"
+                             v-for="i in workstation.output"></div>
+                    </div>
                     <div class="worker-avatar">
                         <img v-if="workstation.numberOfWorkers === 1"
                              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
@@ -107,6 +117,14 @@
             }[this.flowDirection];
 
             return `background-image: url('${BASE_URL}/a_${ANGLE}/v1555784793/down-arrow.png')`;
+        }
+
+        protected get inputBallsCount(): number {
+            if (this.workstation.input === Infinity) {
+                return 0;
+            }
+
+            return this.workstation.input;
         }
 
         protected get inputColour(): string {
@@ -204,6 +222,7 @@
             outline: hsl(0, 0%, 20%) 1px solid;
             height: 150px;
             width: 100%;
+            position: relative;
 
             .worker-avatar {
                 position: relative;
@@ -234,6 +253,7 @@
             }
 
             .dice-container {
+                position: relative;
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
@@ -244,6 +264,39 @@
                     width: 30px;
                     height: 30px;
                     margin: 3px;
+                }
+            }
+
+            .input-balls-container {
+                left: 0;
+            }
+
+            .output-balls-container {
+                right: 0;
+                flex-direction: row-reverse;
+            }
+
+            .input-balls-container, .output-balls-container {
+                position: absolute;
+                width: 60px;
+                max-height: 150px;
+                overflow-y: auto;
+                display: flex;
+                flex-wrap: wrap;
+                // Making scrollbars invisible in Chrome, Safari and Opera
+                &::-webkit-scrollbar {
+                    width: 0 !important
+                }
+
+                overflow: -moz-scrollbars-none; // Making scrollbars invisible in firefox
+                -ms-overflow-style: none; // Making scrollbars invisible in IE
+
+                .ball {
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 7px;
+                    border: darkblue 1px solid;
+                    margin: 1px;
                 }
             }
         }
