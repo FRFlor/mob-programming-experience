@@ -35,6 +35,19 @@ export class ProductionLine {
         this.daysElapsed++;
     }
 
+    public async mob(): Promise<void> {
+        this.restart();
+        this.moveAllWorkersTo(0);
+        await this.work();
+
+        for (let i = 1; i < this.workStations.length; i++) {
+            this.moveAllWorkersTo(i);
+            do {
+                await this.work();
+            } while (this.workStations[i].input > 0);
+        }
+    }
+
     public moveWorker(from: number, to: number): void {
         assertWorkstationExists(from);
         assertWorkstationExists(to);

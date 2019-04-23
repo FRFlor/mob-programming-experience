@@ -54,6 +54,10 @@
                     </div>
 
                     <div class="d-flex">
+                        <button v-ripple @click="demonstrateMobbing" :disabled="isBusy">Automatic Mob</button>
+                    </div>
+
+                    <div class="d-flex">
                         <button class="statistics-trigger"
                                 @click="$modal.show('chart-modal')"
                                 :disabled="productionLine.days === 0 || isBusy"
@@ -107,6 +111,15 @@
                 await this.productionLine.work();
             }
             this.isBusy = false;
+        }
+
+        protected async demonstrateMobbing(): Promise<void> {
+            const originalAnimationMultiplier: number = this.animationMultiplier;
+            this.animationMultiplier = 0.1;
+
+            await this.productionLine.mob();
+
+            this.animationMultiplier = originalAnimationMultiplier;
         }
 
         protected getFlowDirectionOfStation(stationId: number): FlowDirection {
