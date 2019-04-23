@@ -24,7 +24,7 @@ export default class App extends Vue {
         #app {
             display: flex;
             justify-content: center;
-            margin-top: 2rem;
+            margin: 2rem 0 4rem;
         }
     }
 </style>
