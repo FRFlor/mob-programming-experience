@@ -73,12 +73,14 @@
         }
 
         protected async runSimulation(): Promise<void> {
-            if (this.simulatedCycles === 0) {
-                this.countTotals = Array.from({length: 100}, (_) => 0);
-            }
-
             const simulation: ProductionLine = new ProductionLine(new DiceFactory());
             simulation.setWaitMultiplier(0);
+
+            const perfectProductionSize: number =  simulation.workStations[0].maxWorkerEffort * this.daysPerCycle;
+
+            if (this.simulatedCycles === 0) {
+                this.countTotals = Array.from({length: perfectProductionSize}, (_) => 0);
+            }
 
             for (let j = 0; j < 25; j++) {
                 for (let i = 0; i < this.daysPerCycle; i++) {
