@@ -47,15 +47,20 @@
                                 v-model="animationMultiplier"/>
                 </div>
                 <div class="d-flex flex-column">
+                    <div class="control-header"> Manual Management </div>
                     <div class="d-flex">
-                        <button v-ripple @click="doSingleWorkCycle" :disabled="isBusy">Work for 1 day</button>
-                        <button v-ripple @click="fastForwardCycles(10)" :disabled="isBusy">Work for 10 days!</button>
+                        <button v-ripple @click="work(1)" :disabled="isBusy">Work for 1 day</button>
+                        <button v-ripple @click="work(5)" :disabled="isBusy">Work for 5 days!</button>
                         <button v-ripple @click="productionLine.restart()" :disabled="isBusy">Restart</button>
                     </div>
 
+                    <div class="control-header"> Automated Workflow </div>
                     <div class="d-flex">
                         <button v-ripple @click="demonstrateMobbing" :disabled="isBusy">Automatic Mob</button>
+                        <button v-ripple @click="demonstrateSolo" :disabled="isBusy">Automatic Solo</button>
                     </div>
+
+                    <div class="control-header"> Statistics </div>
 
                     <div class="d-flex">
                         <button class="statistics-trigger"
@@ -99,13 +104,7 @@
             document.documentElement.style.setProperty('--scale', `${this.scale / 100}`);
         }
 
-        protected async doSingleWorkCycle(): Promise<void> {
-            this.isBusy = true;
-            await this.productionLine.work();
-            this.isBusy = false;
-        }
-
-        protected async fastForwardCycles(numberOfDays: number): Promise<void> {
+        protected async work(numberOfDays: number = 1): Promise<void> {
             this.isBusy = true;
             for (let i = 0; i < numberOfDays; i++) {
                 await this.productionLine.work();
@@ -113,21 +112,36 @@
             this.isBusy = false;
         }
 
+        protected async demonstrateSolo(): Promise<void> {
+            const NUMBER_OF_DAYS: number = 20;
+
+            this.productionLine.restart();
+            await this.speedUpCallback(async () => {
+                await this.work(NUMBER_OF_DAYS);
+            });
+            this.showStatisticsChart();
+        }
+
         protected showStatisticsChart(): void {
             this.$modal.show('chart-modal');
         }
 
         protected async demonstrateMobbing(): Promise<void> {
+            await this.speedUpCallback(async () => {
+                await this.productionLine.mob();
+            });
+            this.showStatisticsChart();
+        }
+
+        protected async speedUpCallback(callback: any): Promise<void> {
             const originalAnimationMultiplier: number = this.animationMultiplier;
             if (this.animationMultiplier > 0.1) {
                 this.animationMultiplier = 0.1;
             }
 
-            await this.productionLine.mob();
+            await callback();
 
             this.animationMultiplier = originalAnimationMultiplier;
-
-            this.showStatisticsChart();
         }
 
         protected getFlowDirectionOfStation(stationId: number): FlowDirection {
@@ -163,6 +177,16 @@
 </script>
 
 <style lang="scss" scoped>
+
+    .control-header {
+        font-size: 0.75rem;
+        width: 100%;
+        text-align: center;
+        margin: 0.5rem;
+        &:first-of-type {
+            margin-top: 0;
+        }
+    }
 
     button {
         margin: 0.15rem;
