@@ -82,7 +82,7 @@
         protected contextStation: number = 0;
         protected isBusy: boolean = false;
         protected scale: number = 100;
-        protected animationMultiplier: number = 1;
+        protected animationMultiplier: number = 0.5;
         protected productionLine: ProductionLine = new ProductionLine(new DiceFactory());
 
         @Watch('animationMultiplier')
@@ -133,6 +133,10 @@
 
         protected moveAllWorkersToContextStation() {
             this.productionLine.moveAllWorkersTo(this.contextStation);
+        }
+
+        private created(): void {
+            this.productionLine.setWaitMultiplier(this.animationMultiplier);
         }
     }
 </script>
