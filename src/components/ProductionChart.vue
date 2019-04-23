@@ -78,9 +78,12 @@
                     labels: this.x,
                     datasets: [
                         {
-                            label: 'Data One',
+                            label: 'Odds (%)',
                             backgroundColor: this.y.map((yValue, xValue) => {
                                 if (xValue === this.selectXValue) {
+                                    if (yValue === 100) {
+                                        return 'hsla(100,50%,52%, 0.1)';
+                                    }
                                     return 'hsl(100,50%,52%)';
                                 }
                                 return '#f87979';

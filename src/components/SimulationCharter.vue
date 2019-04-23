@@ -120,6 +120,7 @@
     .chart {
         min-width: 800px;
         max-width: 1000px;
+        margin: 10px 30px 10px 5px;
     }
 
     .controls {
