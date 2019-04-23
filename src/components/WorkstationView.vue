@@ -6,12 +6,12 @@
              :src="require('../assets/mini-man.png')"
              aria-hidden="true"
              alt="pre-loading of the drag-icon">
-        <div class="station-header" :style="headerFlexOrder">
+        <div class="station-header" :class="{reverse}">
             <div class="input" :style="inputColour">
                 <h2>Input</h2>
                 <div class="value" v-if="workstation.input === Infinity">∞</div>
                 <div class="value" v-else>{{workstation.input}}</div>
-                <div class="balls-container">
+                <div class="balls-container" :class="{reverse}">
                     <div class="ball"
                          :style="inputColour"
                          v-for="i in inputBallsCount">
@@ -35,7 +35,7 @@
             <div class="output">
                 <h2>Output</h2>
                 <div class="value">{{workstation.output}}</div>
-                <div class="balls-container">
+                <div class="balls-container" :class="{reverse}">
                     <div class="ball"
                          style="background-color: hsl(240, 34%, 33%);"
                          v-for="i in workstation.output">
@@ -141,14 +141,8 @@
             return `background-color: hsl(123, 100%, 85%)`;
         }
 
-        protected get headerFlexOrder() {
-            const flexDirection = this.flowDirection === FlowDirection.RightToLeft
-                ? 'row-reverse'
-                : 'row';
-
-            return {
-                'flex-direction' : flexDirection,
-            };
+        protected get reverse(): boolean {
+            return this.flowDirection === FlowDirection.RightToLeft;
         }
     }
 </script>
@@ -209,6 +203,10 @@
             align-items: center;
             justify-content: center;
             background-color: hsl(100, 92%, 90%);
+
+            &.reverse {
+                flex-direction: row-reverse;
+            }
 
             .station-avatar {
                 position: relative;
@@ -285,6 +283,26 @@
             color: hsl(0, 0%, 96%);
         }
 
+        .input {
+            .balls-container {
+                flex-direction: row;
+
+                &.reverse {
+                    flex-direction: row-reverse;
+                }
+            }
+        }
+
+        .output {
+            .balls-container {
+                flex-direction: row-reverse;
+
+                &.reverse {
+                    flex-direction: row;
+                }
+            }
+        }
+
         .input, .output {
             position: relative;
             text-align: center;
@@ -304,6 +322,7 @@
                 pointer-events: none;
                 position: absolute;
                 top: 50px;
+                width: 100%;
                 max-height: 150px;
                 overflow-y: hidden;
                 display: flex;
