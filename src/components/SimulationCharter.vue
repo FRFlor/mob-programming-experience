@@ -9,6 +9,7 @@
             <div class="controls">
                 <button v-ripple
                         @click="runSimulation"
+                        :disabled="isBusy"
                         v-text="simulatedCycles > 0 ? 'Refine Simulation' : 'Start Simulation'"></button>
             </div>
         </div>
@@ -30,6 +31,7 @@
         protected simulatedCycles: number = 0;
         protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
 
+        protected isBusy: boolean = false;
         protected totalProduced: number[] = [];
         protected oddsOfProducing: number[] = [];
         protected countTotals: number[] = [];
@@ -76,10 +78,11 @@
         }
 
         protected async runSimulation(): Promise<void> {
+            this.isBusy = true;
             const simulation: ProductionLine = new ProductionLine(new DiceFactory());
             simulation.setWaitMultiplier(0);
 
-            const perfectProductionSize: number =  simulation.workStations[0].maxWorkerEffort * this.daysPerCycle;
+            const perfectProductionSize: number = simulation.workStations[0].maxWorkerEffort * this.daysPerCycle;
 
             if (this.simulatedCycles === 0) {
                 this.countTotals = Array.from({length: perfectProductionSize}, (_) => 0);
@@ -94,6 +97,8 @@
                 simulation.restart();
                 this.recalculateNormalizedChart();
             }
+
+            this.isBusy = false;
         }
     }
 </script>
@@ -108,11 +113,18 @@
         margin-left: 60px;
         display: flex;
         justify-content: center;
+
         button {
             height: 4rem;
             width: 15rem;
             margin: 2rem;
             font-size: 1.2rem;
+            &:hover {
+                cursor: pointer;
+            }
+            &[disabled] {
+                cursor: not-allowed;
+            }
         }
     }
 
