@@ -19,12 +19,10 @@
     import {DiceFactory} from '@/classes/DiceFactory';
     import ProductionChart from '@/components/ProductionChart.vue';
 
-    @Component({
-        components: {ProductionChart}
-    })
+    @Component({components: {ProductionChart}})
     export default class SimulationCharter extends Vue {
-        @Prop({default: 20}) daysPerCycle!: number;
-        @Prop({default: undefined}) amountPlayerProduced?: number;
+        @Prop({default: 20}) protected daysPerCycle!: number;
+        @Prop({default: undefined}) protected amountPlayerProduced?: number;
 
         protected simulatedCycles: number = 0;
         protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
@@ -71,10 +69,10 @@
                 return;
             }
 
-            Vue.set(this.oddsOfProducing,this.amountPlayerProduced, 100);
+            Vue.set(this.oddsOfProducing, this.amountPlayerProduced, 100);
         }
 
-        protected async runSimulation(): void {
+        protected async runSimulation(): Promise<void> {
             if (this.simulatedCycles === 0) {
                 this.countTotals = Array.from({length: 100}, (_) => 0);
             }

@@ -47,14 +47,14 @@ const getMockdata = (minXBuffer: number, maxXBuffer: number) => {
     const middleData: number[] = [50, 20, 10, 5, 2];
     const numberOf0s: number = 20;
 
-    const givenY: number[] = Array.from({length: numberOf100s}, _ => 100);
+    const givenY: number[] = Array.from({length: numberOf100s}, (_: any) => 100);
     givenY.push(...middleData);
-    givenY.push(...Array.from({length: numberOf0s}, _ => 0));
+    givenY.push(...Array.from({length: numberOf0s}, (_: any) => 0));
     const givenX: number[] = Array.from({length: givenY.length}, (_, i) => i);
 
-    const expectedY: number[] = Array.from({length: minXBuffer}, _ => 100);
+    const expectedY: number[] = Array.from({length: minXBuffer}, (_: any) => 100);
     expectedY.push(...middleData);
-    expectedY.push(...Array.from({length: maxXBuffer}, _ => 0));
+    expectedY.push(...Array.from({length: maxXBuffer}, (_: any) => 0));
     const expectedX: number[] = Array.from({length: expectedY.length}, (_, i) => i + numberOf100s - minXBuffer);
 
     return {
