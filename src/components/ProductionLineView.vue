@@ -59,7 +59,7 @@
 
                     <div class="d-flex">
                         <button class="statistics-trigger"
-                                @click="$modal.show('chart-modal')"
+                                @click="showStatisticsChart"
                                 :disabled="productionLine.days === 0 || isBusy"
                                 v-ripple >
                             Show statistics<br/>(Your management vs No Management)
@@ -113,6 +113,10 @@
             this.isBusy = false;
         }
 
+        protected showStatisticsChart(): void {
+            this.$modal.show('chart-modal');
+        }
+
         protected async demonstrateMobbing(): Promise<void> {
             const originalAnimationMultiplier: number = this.animationMultiplier;
             this.animationMultiplier = 0.1;
@@ -120,6 +124,8 @@
             await this.productionLine.mob();
 
             this.animationMultiplier = originalAnimationMultiplier;
+
+            this.showStatisticsChart();
         }
 
         protected getFlowDirectionOfStation(stationId: number): FlowDirection {
