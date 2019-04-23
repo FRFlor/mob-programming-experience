@@ -6,11 +6,17 @@
              :src="require('../assets/mini-man.png')"
              aria-hidden="true"
              alt="pre-loading of the drag-icon">
-        <div class="station-header">
+        <div class="station-header" :style="headerFlexOrder">
             <div class="input" :style="inputColour">
                 <h2>Input</h2>
                 <div class="value" v-if="workstation.input === Infinity">∞</div>
                 <div class="value" v-else>{{workstation.input}}</div>
+                <div class="balls-container">
+                    <div class="ball"
+                         :style="inputColour"
+                         v-for="i in inputBallsCount">
+                    </div>
+                </div>
             </div>
 
             <div class="station-title">
@@ -29,6 +35,12 @@
             <div class="output">
                 <h2>Output</h2>
                 <div class="value">{{workstation.output}}</div>
+                <div class="balls-container">
+                    <div class="ball"
+                         style="background-color: hsl(240, 34%, 33%);"
+                         v-for="i in workstation.output">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -42,16 +54,6 @@
                   :transfer-data="{ sourceId: id }"
                   :image="require('../assets/mini-man.png')">
                 <div class="workers">
-                    <div class="input-balls-container">
-                        <div class="ball"
-                             :style="inputColour"
-                             v-for="i in inputBallsCount"></div>
-                    </div>
-                    <div class="output-balls-container" v-if="workstation.output">
-                        <div class="ball"
-                             style="background-color: hsl(240, 34%, 33%);"
-                             v-for="i in workstation.output"></div>
-                    </div>
                     <div class="worker-avatar">
                         <img v-if="workstation.numberOfWorkers === 1"
                              src="https://res.cloudinary.com/felipeflor/image/upload/v1555262973/man-user.svg"
@@ -138,6 +140,16 @@
 
             return `background-color: hsl(123, 100%, 85%)`;
         }
+
+        protected get headerFlexOrder() {
+            const flexDirection = this.flowDirection === FlowDirection.RightToLeft
+                ? 'row-reverse'
+                : 'row';
+
+            return {
+                'flex-direction' : flexDirection,
+            };
+        }
     }
 </script>
 
@@ -208,7 +220,7 @@
                     background-color: rgba(51, 51, 204, 0.77);
                     color: hsl(0, 0%, 80%);
                     bottom: 14.1px;
-                    right: 38.3px;
+                    right: 32.3px;
                     font-size: 0.85rem;
                     display: flex;
                     justify-content: center;
@@ -266,39 +278,6 @@
                     margin: 3px;
                 }
             }
-
-            .input-balls-container {
-                left: 0;
-            }
-
-            .output-balls-container {
-                right: 0;
-                flex-direction: row-reverse;
-            }
-
-            .input-balls-container, .output-balls-container {
-                position: absolute;
-                width: 60px;
-                max-height: 150px;
-                overflow-y: auto;
-                display: flex;
-                flex-wrap: wrap;
-                // Making scrollbars invisible in Chrome, Safari and Opera
-                &::-webkit-scrollbar {
-                    width: 0 !important
-                }
-
-                overflow: -moz-scrollbars-none; // Making scrollbars invisible in firefox
-                -ms-overflow-style: none; // Making scrollbars invisible in IE
-
-                .ball {
-                    width: 7px;
-                    height: 7px;
-                    border-radius: 7px;
-                    border: darkblue 1px solid;
-                    margin: 1px;
-                }
-            }
         }
 
         .output {
@@ -307,17 +286,37 @@
         }
 
         .input, .output {
+            position: relative;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-width: 50px;
+            min-width: 55px;
             min-height: 50px;
             outline: hsl(0, 0%, 20%) 1px solid;
 
             .value {
                 margin-bottom: 0.5rem;
                 font-size: 1.25rem;
+            }
+
+            .balls-container {
+                pointer-events: none;
+                position: absolute;
+                top: 50px;
+                max-height: 150px;
+                overflow-y: hidden;
+                display: flex;
+                flex-wrap: wrap;
+                z-index: 1;
+
+                .ball {
+                    border-radius: 7px;
+                    width: 7px;
+                    height: 7px;
+                    border: darkblue 1px solid;
+                    margin: 1px;
+                }
             }
         }
     }
