@@ -104,7 +104,8 @@
 
         protected get simulationButtonCaption(): string {
             if (this.isBusy) {
-                const cyclesRemaining: number = this.cyclesPerRefinementRequest - this.simulatedCycles % this.cyclesPerRefinementRequest;
+                const cyclesRemaining: number = this.cyclesPerRefinementRequest
+                    - this.simulatedCycles % this.cyclesPerRefinementRequest;
                 return `Please wait </br>( ${cyclesRemaining} cycles remaining )`;
             }
 
@@ -131,9 +132,11 @@
             width: 15rem;
             margin: 2rem;
             font-size: 1.2rem;
+
             &:hover {
                 cursor: pointer;
             }
+
             &[disabled] {
                 cursor: not-allowed;
             }
