@@ -10,7 +10,7 @@
                 <button v-ripple
                         @click="runSimulation"
                         :disabled="isBusy"
-                        v-text="simulatedCycles > 0 ? 'Refine Simulation' : 'Start Simulation'"></button>
+                        v-html="simulationButtonCaption"></button>
             </div>
         </div>
     </div>
@@ -29,6 +29,7 @@
         @Prop({default: undefined}) protected amountPlayerProduced?: number;
 
         protected simulatedCycles: number = 0;
+        protected cyclesPerRefinementRequest: number = 25;
         protected chartTitle: string = 'Production odds for stations without management (Pre-loaded: 1000 cycles)';
 
         protected isBusy: boolean = false;
@@ -88,7 +89,7 @@
                 this.countTotals = Array.from({length: perfectProductionSize}, (_) => 0);
             }
 
-            for (let j = 0; j < 25; j++) {
+            for (let j = 0; j < this.cyclesPerRefinementRequest; j++) {
                 for (let i = 0; i < this.daysPerCycle; i++) {
                     await simulation.work();
                 }
@@ -99,6 +100,17 @@
             }
 
             this.isBusy = false;
+        }
+
+        protected get simulationButtonCaption(): string {
+            if (this.isBusy) {
+                const cyclesRemaining: number = this.cyclesPerRefinementRequest - this.simulatedCycles % this.cyclesPerRefinementRequest;
+                return `Please wait </br>( ${cyclesRemaining} cycles remaining )`;
+            }
+
+            return this.simulatedCycles > 0
+                ? `Refine Simulation </br>( ${this.cyclesPerRefinementRequest} more cycles )`
+                : `Start Simulation  </br>( ${this.cyclesPerRefinementRequest} cycles )`;
         }
     }
 </script>
