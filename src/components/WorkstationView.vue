@@ -268,6 +268,7 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: center;
+                z-index: 2;
                 margin-top: 5px;
 
                 .dice {
