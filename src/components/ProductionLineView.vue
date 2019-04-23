@@ -54,7 +54,10 @@
                     </div>
 
                     <div class="d-flex">
-                        <button class="statistics-trigger" v-ripple @click="$modal.show('chart-modal')">
+                        <button class="statistics-trigger"
+                                @click="$modal.show('chart-modal')"
+                                :disabled="productionLine.days === 0"
+                                v-ripple >
                             Show statistics<br/>(Your management vs No Management)
                         </button>
                     </div>
@@ -145,6 +148,9 @@
 
         &:hover {
             cursor: pointer;
+            &[disabled] {
+                cursor: not-allowed;
+            }
         }
 
         &.statistics-trigger {
