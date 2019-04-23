@@ -1,7 +1,7 @@
 # Mob Programming Experience 
 
 Demo:
-https://mob-experience.felipeflor.com
+https://mob.felipeflor.com
 
 This application demonstrates the effects of bottle necking over production lines. 
 
