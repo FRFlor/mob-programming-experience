@@ -136,9 +136,9 @@ export class WorkStation {
 
         // Instantaneous calculation
         if (this.waitMultiplier === 0) {
-            const effectiveWork: number = Math.min(this.inputCount, this.effortCount);
-            this.outputCount += effectiveWork;
-            this.inputCount -= effectiveWork;
+            this.workDone = Math.min(this.inputCount, this.effortCount);
+            this.outputCount += this.workDone;
+            this.inputCount -= this.workDone;
             return;
         }
 
