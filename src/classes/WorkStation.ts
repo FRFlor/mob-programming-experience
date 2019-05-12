@@ -90,10 +90,6 @@ export class WorkStation {
         this.workersDice.forEach((dice: IRandomNumberGenerator) => dice.setWaitMultiplier(this.waitMultiplier));
     }
 
-    public diceAreRolling(): boolean {
-        return this.workersDice.find((dice: IRandomNumberGenerator) => !dice.isRolling) === undefined;
-    }
-
     public get effortCount(): number {
         return this.workersEffort.reduce((prev: number, currentValue: number) => currentValue + prev, 0);
     }
