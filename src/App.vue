@@ -8,11 +8,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import ProductionLineView from '@/components/ProductionLineView.vue';
 
-@Component({
-  components: {
-      ProductionLineView,
-  },
-})
+@Component({ components: { ProductionLineView } })
 export default class App extends Vue {
 }
 </script>
@@ -20,7 +16,7 @@ export default class App extends Vue {
 <style lang="scss">
     body {
         margin: 0;
-        background-color: hsl(30, 40%, 85%);
+        background-color: hsla(170, 41%, 26%, 0.5);
         #app {
             display: flex;
             justify-content: center;
