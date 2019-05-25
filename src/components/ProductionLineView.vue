@@ -29,23 +29,30 @@
             </div>
 
             <div class="control-center" :style="{'grid-area': `controls`}">
-                <div class="days-of-operation">
-                    <h2>Days of Operation</h2>
-                    <div class="value">{{productionLine.days}}</div>
+                <div class="d-flex flex-column">
+                    <div class="d-flex">
+                        <div class="days-of-operation">
+                            <h2>Days of Operation</h2>
+                            <div class="value">{{productionLine.days}}</div>
+                        </div>
+                        <div class="animation-duration-slider">
+                            <label for="animation_duration_slider">Animation Duration</label>
+                            <vue-slider direction="btt"
+                                        id="animation_duration_slider"
+                                        height="80px"
+                                        width="10px"
+                                        :max="1"
+                                        :interval="0.25"
+                                        :min="0"
+                                        tooltip-formatter="Animation Duration: x{value}"
+                                        tooltip-placement="right"
+                                        v-model="animationMultiplier"/>
+                        </div>
+                    </div>
+
+                    <button v-ripple class="help-button">Help</button>
                 </div>
-                <div class="animation-duration-slider">
-                    <label for="animation_duration_slider">Animation Duration</label>
-                    <vue-slider direction="btt"
-                                id="animation_duration_slider"
-                                height="80px"
-                                width="10px"
-                                :max="1"
-                                :interval="0.25"
-                                :min="0"
-                                tooltip-formatter="Animation Duration: x{value}"
-                                tooltip-placement="right"
-                                v-model="animationMultiplier"/>
-                </div>
+
                 <div class="d-flex flex-column">
                     <div class="control-header"> Manual Management </div>
                     <div class="d-flex">
@@ -55,7 +62,7 @@
                     </div>
 
                     <div class="control-header"> Automated Workflow </div>
-                    <div class="d-flex">
+                    <div class="d-flex justify-around">
                         <button v-ripple @click="demonstrateMobbing" :disabled="isBusy">Automatic Mob</button>
                         <button v-ripple @click="demonstrateSolo" :disabled="isBusy">Automatic Solo</button>
                     </div>
@@ -226,6 +233,17 @@
         align-items: center;
     }
 
+    button {
+        border-radius: 1rem;
+        &.help-button {
+            width: 20px;
+            margin: 2rem auto;
+        }
+    }
+
+    .days-of-operation {
+        margin-right: 1rem;
+    }
     .days-of-operation, .animation-duration-slider {
         display: flex;
         flex-direction: column;
